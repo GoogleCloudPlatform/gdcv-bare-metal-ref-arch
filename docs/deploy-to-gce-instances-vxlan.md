@@ -1,0 +1,277 @@
+# Deploy to GCE instances with VXLAN
+
+## Google Cloud Platform(GCP) account requirements
+
+See the [Logging into gcloud](https://cloud.google.com/anthos/gke/docs/bare-metal/1.6/installing/install-prereq#logging_into_gcloud) section of the [Installation prerequisities overview](https://cloud.google.com/anthos/gke/docs/bare-metal/1.6/installing/install-prereq) documentation for the IAM role requirements.
+
+## Prepare Cloud Shell
+
+1. Open Cloud Shell
+1. **[Cloud Shell]** Authenticate `gcloud` and set the application-default
+   ```
+   gcloud auth login --activate --quiet --update-adc
+   ```
+1. **[Cloud Shell]** Clone this project to the Cloud Shell home directory
+   ```
+   git clone https://github.com/GoogleCloudPlatform/anthos-bare-metal-ref-arch.git
+   ```
+1. **[Cloud Shell]** Set the environment variables, if they are not set they will default to the following:
+   ```
+   export ORGANIZATION_ID=
+   ```
+   **OR**
+   ```
+   export FOLDER_ID=
+   ```
+   ```
+   export BILLING_ACCOUNT_ID=
+   export NETWORK_PROJECT_ID=project-0-net-prod
+   export PLATFORM_PROJECT_ID=project-1-platform-prod
+   export APP_PROJECT_ID=project-2-bofa-prod
+   ```
+1. **[Cloud Shell]** Change directory into `anthos-bare-metal-ref-arch`
+   ```
+   cd anthos-bare-metal-ref-arch
+   ```
+1. **[Cloud Shell]** Setup variables file
+   ```
+   ./scripts/helpers/set_variables.sh
+   ```
+1. **[Cloud Shell]** Logout, the new shell configurations will take effect on next login
+   ```
+   logout
+   ```
+
+## Create the GCP projects
+
+1. Open Cloud Shell
+1. **[Cloud Shell]** Create the GCP projects
+   ```
+   ${ABM_WORK_DIR}/scripts/002_create_gcp_projects.sh
+   ```
+
+## Create the Shared VPC
+
+To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared VPC Admin` role is required for the organization or folder.
+
+1. Open Cloud Shell
+1. **[Cloud Shell]** Create the Shared VPC
+   ```
+   ${ABM_WORK_DIR}/scripts/003_create_shared_vpc.sh
+   ```
+
+## Create the administrative host
+
+> **NOTE**: The following quota limits are required in the PLATFORM_PROJECT_ID project to provision all of the instances:
+>
+> - us-central1: >= 96 CPUs
+> - us-west1: >= 96 CPUs
+
+1. Open Cloud Shell
+1. **[Cloud Shell]** Create the administrative host
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/001_create_admin_instance.sh
+   ```
+
+## Prepare the administrative host
+
+1. Connect to the administrative host
+   - Preferred SSH client
+   - CloudShell:
+     ```
+     gcloud compute ssh --project ${PLATFORM_PROJECT_ID} --zone=us-central1-a bare-metal-admin-1
+     ```
+1. **[Admin Host]** Clone this project to the administrative host
+   ```
+   git clone https://github.com/GoogleCloudPlatform/anthos-bare-metal-ref-arch.git
+   ```
+1. **[Admin Host]** Set the environment variables, if they are not set they will default to the following:
+   ```
+   export APP_PROJECT_ID=project-2-bofa-prod
+   export NETWORK_PROJECT_ID=project-0-net-prod
+   export PLATFORM_PROJECT_ID=project-1-platform-prod
+   ```
+1. **[Admin Host]** Change directory into `anthos-bare-metal-ref-arch`
+   ```
+   cd anthos-bare-metal-ref-arch
+   ```
+1. **[Admin Host]** Setup variables file
+   ```
+   ./scripts/helpers/set_variables.sh
+   ```
+1. **[Admin Host]** Source the `vars.sh` file
+   ```
+   source ./scripts/vars.sh
+   ```
+1. **[Admin Host]** Prepare the administrative host
+   ```
+   ./scripts/001_prepare_admin_host.sh
+   ```
+1. **[Admin Host]** Logout, the new shell configurations will take effect on next login.
+   ```
+   logout
+   ```
+
+## Create the GCE instances
+
+> **NOTE**: The following quota limits are required in the PLATFORM_PROJECT_ID project to provision all of the instances:
+>
+> - us-central1: >= 96 CPUs
+> - us-west1: >= 96 CPUs
+
+1. Connect to the administrative host
+1. **[Admin Host]** Authenticate `gcloud` and set the application-default
+   ```
+   gcloud auth login --activate --quiet --update-adc
+   ```
+   > **NOTE**: If you get an error message such as: ` gcloud: command not found` or `-bash: /snap/bin/gcloud: No such file or directory`, logout to activate the shell configuration changes.
+1. **[Admin Host]** Create the GCE cluster instances
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/002_create_cluster_instances.sh
+   ```
+1. **[Admin Host]** Distribute the `DEPLOYMENT_USER` SSH key
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/003_distribute_ssh_keys.sh
+   ```
+1. **[Admin Host]** Validate the `DEPLOYMENT_USER` settings
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/004_validate_deployment_user.sh
+   ```
+1. **[Admin Host]** Generate the IP files
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/005_generate_ip_files.sh
+   ```
+1. **[Admin Host]** Create the VXLAN network
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/006_create_vxlan_network.sh
+   ```
+1. **[Admin Host]** Validate the VXLAN network
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/007_validate_vxlan_network.sh
+   ```
+
+## Create a Cloud Monitoring workspace
+
+1. Connect to the administrative host
+1. **[Admin Host]** Create a Cloud Monitoring workspace
+   ```
+   ${ABM_WORK_DIR}/scripts/004_create_cloud_monitoring_workspace.sh
+   ```
+
+## Prepare the cluster configuration files
+
+1. Connect to the administrative host
+1. **[Admin Host]** Prepare the cluster configuration files
+   ```
+   ${ABM_WORK_DIR}/scripts/005_prepare_configuration_files.sh
+   ```
+
+## Create the clusters
+
+1. Connect to the administrative host
+1. **[Admin Host]** Create the clusters
+   ```
+   ${ABM_WORK_DIR}/scripts/006_create_clusters.sh
+   ```
+
+## Login to the cluster with the Cloud Console
+
+1. Connect to the administrative host
+1. **[Admin Host]** Generate the cluster login tokens
+   ```
+   ${ABM_WORK_DIR}/scripts/007_generate_login_tokens.sh
+   ```
+1. Open the URL provided by the script
+1. For each cluster:
+   1. Click on the cluster name
+   1. Click Login on the right panel
+   1. Choose Token as the method for authentication
+   1. Paste the token from the `007_generate_login_tokens.sh` script for the associated cluster
+   1. Click Login
+1. Verify that all clusters show healthy
+
+## Configure Anthos Config Management(ACM)
+
+1. Connect to the administrative host
+1. **[Admin Host]** Setup ACM
+   ```
+   ${ABM_WORK_DIR}/scripts/008_setup_acm.sh
+   ```
+1. **[Admin Host]** Verify ACM
+   ```
+   ${ABM_WORK_DIR}/scripts/009_verify_acm.sh
+   ```
+   **Verify the following**:
+   - `Status` for each cluster shows `SYNCED` before proceeding.
+     > **NOTE**: Errors may be displayed while the synchronization is in progress.
+
+## Configure Anthos Service Mesh(ASM)
+
+1. Connect to the administrative host
+1. **[Admin Host]** Setup ASM
+   ```
+   ${ABM_WORK_DIR}/scripts/010_setup_asm.sh
+   ```
+1. **[Admin Host]** Verify ASM
+   ```
+   ${ABM_WORK_DIR}/scripts/011_verify_asm.sh
+   ```
+   **Verify the following**:
+   - Deployments and Pods are READY.
+   - Service is created and the `EXTERNAL-IP` is populated.
+
+## Deploy the example application
+
+See the [Deploy the application](deploy-the-application.md) guide.
+
+## Tear down
+
+To delete all of the resources, the instances and projects can just be deleted. To rollback the environment, the Manual rollback steps can be applied until preferred state is reached.
+
+### Delete projects
+
+1. Open Cloud Shell
+1. **[Cloud Shell]** Delete the cluster instances
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/996_delete_cluster_instances.sh
+   ```
+1. **[Cloud Shell]** Delete the administrative host
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/999_delete_admin_instance.sh
+   ```
+1. **[Cloud Shell]** Delete the GCP projects
+   ```
+   ${ABM_WORK_DIR}/scripts/999_delete_gcp_projects.sh
+   ```
+
+### Manual rollback
+
+1. Connect to the administrative host
+1. **[Admin Host]** Unregister the clusters
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/995_unregister_cluster.sh
+   ```
+1. **[Admin Host]** Delete the cluster instances
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/996_delete_cluster_instances.sh
+   ```
+1. **[Admin Host]** Delete the cluster configurations
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/997_delete_cluster_configuration.sh
+   ```
+1. **[Admin Host]** Delete the Google service accounts
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/998_delete_gsas.sh
+   ```
+1. **[Admin Host]** Logout of the administrative host
+   ```
+   logout
+   ```
+1. **[Cloud Shell]** Delete the administrative host
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/999_delete_admin_instance.sh
+   ```
+1. **[Cloud Shell]** Delete the GCP projects
+   ```
+   ${ABM_WORK_DIR}/scripts/999_delete_gcp_projects.sh
+   ```

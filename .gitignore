@@ -1,0 +1,13 @@
+/.local/
+/.manifests/
+/.theia/
+/acm/
+/bank-of-anthos/
+/bin/
+/bmctl-workspace/
+/keys/
+/logs/
+/tmp/
+
+/scripts/host.sh
+/scripts/vars.sh
