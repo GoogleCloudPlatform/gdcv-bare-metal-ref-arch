@@ -95,7 +95,7 @@ done
 
 echo
 bold_no_wait "==================================================================================================================================="
-bold_no_wait "Enter the login token for each cluster at https://console.cloud.google.com/anthos/clusters?project=${PLATFORM_PROJECT_ID}"
+bold_no_wait "Enter the login token for each cluster at https://console.cloud.google.com/kubernetes/list?project=${PLATFORM_PROJECT_ID}"
 bold_no_wait "==================================================================================================================================="
 echo
 

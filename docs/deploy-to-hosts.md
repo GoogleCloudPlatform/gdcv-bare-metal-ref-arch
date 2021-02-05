@@ -126,7 +126,7 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 1. Open the URL provided by the script
 1. For each cluster:
    1. Click on the cluster name
-   1. Click Login on the right panel
+   1. Click Login
    1. Choose Token as the method for authentication
    1. Paste the token from the `007_generate_login_tokens.sh` script for the associated cluster
    1. Click Login
