@@ -23,6 +23,9 @@ if [ -z ${bc_installed} ]; then
     nopv_and_execute "sudo apt-get update && sudo apt-get -y install bc"
 fi
 
+title_no_wait "Enable compute.googleapis.com API"
+print_and_execute "gcloud services enable compute.googleapis.com --project ${PLATFORM_PROJECT_ID}"
+
 region_1_quota=$(gcloud compute regions describe ${REGION["1"]} --project ${PLATFORM_PROJECT_ID} --format "value(quotas[0].limit)")
 region_2_quota=$(gcloud compute regions describe ${REGION["3"]} --project ${PLATFORM_PROJECT_ID} --format "value(quotas[0].limit)")
 
@@ -42,12 +45,15 @@ if [ ${quota_error} -ne 0 ]; then
     bold_and_wait "Check CPU quotas at https://console.cloud.google.com/admin/quotas/details;servicem=compute.googleapis.com;metricm=compute.googleapis.com%2Fcpus;limitIdm=1%2F%7Bproject%7D?cloudshell=false&project=${PLATFORM_PROJECT_ID}"
 fi
 
-title_no_wait "Enable compute.googleapis.com API"
-print_and_execute "gcloud services enable compute.googleapis.com"
-
 title_no_wait "Creating administrative instance"
 region=${REGION["1"]}
 zone=${ZONE["1"]}
+
+network_args="--network ${NETWORK_NAME}"
+if [ ${USE_SHARED_VPC,,} == "true" ]; then
+    network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${region}/subnetworks/default"
+fi
+
 print_and_execute "gcloud compute instances create bare-metal-admin-1 \
 --boot-disk-size 512G \
 --boot-disk-type pd-ssd \
@@ -60,8 +66,8 @@ print_and_execute "gcloud compute instances create bare-metal-admin-1 \
 --no-service-account \
 --project ${PLATFORM_PROJECT_ID} \
 --quiet \
---subnet projects/${NETWORK_PROJECT_ID}/regions/${region}/subnetworks/default \
---zone=${zone}"
+--zone=${zone} \
+${network_args}"
 
 check_local_error
 total_runtime

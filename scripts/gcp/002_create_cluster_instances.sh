@@ -46,6 +46,11 @@ for cluster in $(seq 1 $NUM_CLUSTERS); do
     region=${REGION[${cluster}]}
     zone=${ZONE[${cluster}]}
     
+    network_args="--network ${NETWORK_NAME}"
+    if [ ${USE_SHARED_VPC,,} == "true" ]; then
+        network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${region}/subnetworks/default"
+    fi
+
     for cp in $(seq 1 $NUM_CP_NODES); do
         hostname="metal-${cluster}-prod-cp-${cp}"
         
@@ -62,8 +67,8 @@ for cluster in $(seq 1 $NUM_CLUSTERS); do
 --no-service-account \
 --project=${PLATFORM_PROJECT_ID} \
 --quiet \
---subnet projects/${NETWORK_PROJECT_ID}/regions/${region}/subnetworks/default \
---zone=${zone}"
+--zone=${zone} \
+${network_args}"
     done
     
     for worker in $(seq 1 $NUM_WORKER_NODES); do
@@ -82,8 +87,8 @@ for cluster in $(seq 1 $NUM_CLUSTERS); do
 --no-service-account \
 --project=${PLATFORM_PROJECT_ID} \
 --quiet \
---subnet projects/${NETWORK_PROJECT_ID}/regions/${region}/subnetworks/default \
---zone=${zone}"
+--zone=${zone} \
+${network_args}"
     done
 done
 
