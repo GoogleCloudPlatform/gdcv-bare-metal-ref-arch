@@ -257,7 +257,7 @@ To delete all of the resources, the instances and projects can just be deleted. 
    ```
 1. **[Admin Host]** Delete the cluster configurations
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/997_delete_cluster_configuration.sh
+   ${ABM_WORK_DIR}/scripts/gcp/997_delete_cluster_configurations.sh
    ```
 1. **[Admin Host]** Delete the Google service accounts
    ```
