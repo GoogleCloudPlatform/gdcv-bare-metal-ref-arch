@@ -20,10 +20,10 @@ spec:
   clusterNetwork:
     pods:
       cidrBlocks:
-      - 192.168.0.0/16
+      - ${METAL_3_PROD_K8S_POD_CIDR}
     services:
       cidrBlocks:
-      - 10.96.0.0/12
+      - ${METAL_3_PROD_K8S_SERVICE_CIDR}
   clusterOperations:
     enableApplication: true
     location: ${CLOUD_OPS_REGION}
@@ -40,12 +40,12 @@ spec:
   loadBalancer:
     addressPools:
     - addresses:
-      - 10.195.1.3-10.195.1.10
+      - ${METAL_3_PROD_LB_ADDRESS_POOL}
       name: pool1
     mode: bundled
     vips:
-      controlPlaneVIP: 10.195.1.2
-      ingressVIP: 10.195.1.3
+      controlPlaneVIP: ${METAL_3_PROD_CP_LB_VIP}
+      ingressVIP: ${METAL_3_PROD_INGRESS_LB_VIP}
   nodeAccess:
     loginUser: ${DEPLOYMENT_USER}
   type: hybrid
