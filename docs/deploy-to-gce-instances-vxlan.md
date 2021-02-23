@@ -137,9 +137,9 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ```
    ${ABM_WORK_DIR}/scripts/gcp/004_validate_deployment_user.sh
    ```
-1. **[Admin Host]** Generate the IP files
+1. **[Admin Host]** Generate the host file
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/005_generate_ip_files.sh
+   ${ABM_WORK_DIR}/scripts/gcp/005_generate_host_file.sh
    ```
 1. **[Admin Host]** Create the VXLAN network
    ```

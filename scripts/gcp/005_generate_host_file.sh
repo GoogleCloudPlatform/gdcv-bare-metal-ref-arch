@@ -16,16 +16,10 @@
 
 LOG_FILE_PREFIX=gcp-
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABM_WORK_DIR}/scripts/ip.sh
 
 HOST_FILE=${ABM_WORK_DIR}/scripts/host.sh
 truncate -s 0 ${HOST_FILE}
-
-IP_FILE=${ABM_WORK_DIR}/scripts/ip.sh
-truncate -s 0 ${IP_FILE}
-
-NETWORK_OFFSET=57
-CP_HOST_OFFSET=10
-WORKER_HOST_OFFSET=17
 
 for cluster in $(seq 1 $NUM_CLUSTERS); do
     zone=${ZONE[${cluster}]}
@@ -38,9 +32,6 @@ for cluster in $(seq 1 $NUM_CLUSTERS); do
         env_var_hostname=${hostname//-/_}
         
         echo "export ${env_var_hostname^^}=${ip_address}" >> ${HOST_FILE}
-        
-        ip_suffix=$((${cp} + ${CP_HOST_OFFSET}))
-        echo "export ${env_var_hostname^^}_IP=${IP_PREFIX[${cluster}]}.${ip_suffix}" >> ${IP_FILE}
     done
     
     for worker in $(seq 1 $NUM_WORKER_NODES); do
@@ -51,9 +42,6 @@ for cluster in $(seq 1 $NUM_CLUSTERS); do
         env_var_hostname=${hostname//-/_}
         
         echo "export ${env_var_hostname^^}=${ip_address}" >> ${HOST_FILE}
-        
-        ip_suffix=$((${worker} + ${WORKER_HOST_OFFSET}))
-        echo "export ${env_var_hostname^^}_IP=${IP_PREFIX[${cluster}]}.${ip_suffix}" >> ${IP_FILE}
     done
 done
 

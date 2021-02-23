@@ -2,7 +2,7 @@
 
 ## IP address allocation
 
-The default IP address allocations are as follows. If these allocations need to be modify they can changed in the cluster configuration files specified in the [Review the cluster configuration files](docs/deploy-to-hosts.md#review-the-cluster-configuration-files) section.
+The default IP address allocations are as follows. If these allocations need to be modify they can be changed in the [ip.sh](scripts/ip.sh) file or cluster configuration files specified in the [Review the cluster configuration files](docs/deploy-to-hosts.md#review-the-cluster-configuration-files) section.
 
 | Cluster               | Hosts         | Pods           | Services     | Load Balancers         |
 | --------------------- | ------------- | -------------- | ------------ | ---------------------- |
