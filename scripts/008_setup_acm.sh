@@ -67,6 +67,7 @@ bold_no_wait "==================================================================
 bold_and_wait "When the key has been added"
 
 title_no_wait "Enabling the ACM feature"
+print_and_execute "gcloud services enable --project ${PLATFORM_PROJECT_ID} anthosconfigmanagement.googleapis.com"
 print_and_execute "gcloud alpha container hub config-management enable --project ${PLATFORM_PROJECT_ID}"
 
 title_no_wait "Download config-management-operator.yaml"
