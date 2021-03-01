@@ -51,7 +51,10 @@ for cluster_num in $(seq 1 $NUM_CLUSTERS); do
             cat ${ABM_WORK_DIR}/kustomizations/bmctl-config.yaml | envsubst > ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/bmctl-config.yaml
             cat ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/bmctl-config.yaml ${cluster_yaml} > ${cluster_yaml}.tmp
             mv ${cluster_yaml}.tmp ${cluster_yaml}
-            echo ""
+
+            bold_no_wait "Checking configuration"
+            print_and_execute "bmctl check config --cluster ${cluster_name}"
+            echo
         else
             error_no_wait "There was an error generating the configuration for cluster '${cluster_name}'"
         fi
