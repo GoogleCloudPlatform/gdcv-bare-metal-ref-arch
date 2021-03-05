@@ -15,7 +15,8 @@ See the [Logging into gcloud](https://cloud.google.com/anthos/gke/docs/bare-meta
    ```
    git clone https://github.com/GoogleCloudPlatform/anthos-bare-metal-ref-arch.git
    ```
-1. **[Cloud Shell]** Set the environment variables, if they are not set they will default to the following:
+1. **[Cloud Shell]** Set the Organization ID or Folder ID where the projects will be created.
+   > This step can be skipped if using existing projects.
    ```
    export ORGANIZATION_ID=
    ```
@@ -23,8 +24,13 @@ See the [Logging into gcloud](https://cloud.google.com/anthos/gke/docs/bare-meta
    ```
    export FOLDER_ID=
    ```
+1. **[Cloud Shell]** Set the Billing Account ID of the Billing Account for the new projects.
+   > This step can be skipped if using existing projects.
    ```
    export BILLING_ACCOUNT_ID=
+   ```
+1. **[Cloud Shell]** Set the Project IDs for the new or existing projects, if not set the following defaults will be used:
+   ```
    export NETWORK_PROJECT_ID=project-0-net-prod
    export PLATFORM_PROJECT_ID=project-1-platform-prod
    export APP_PROJECT_ID=project-2-bofa-prod
@@ -85,11 +91,11 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ```
    git clone https://github.com/GoogleCloudPlatform/anthos-bare-metal-ref-arch.git
    ```
-1. **[Admin Host]** Set the environment variables, if they are not set they will default to the following:
+1. **[Admin Host]** Set the Project IDs for the projects, these should match the value entered above.
    ```
-   export APP_PROJECT_ID=project-2-bofa-prod
    export NETWORK_PROJECT_ID=project-0-net-prod
    export PLATFORM_PROJECT_ID=project-1-platform-prod
+   export APP_PROJECT_ID=project-2-bofa-prod
    ```
 1. **[Admin Host]** Change directory into `anthos-bare-metal-ref-arch`
    ```

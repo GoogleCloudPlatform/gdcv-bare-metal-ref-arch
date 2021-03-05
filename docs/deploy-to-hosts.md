@@ -25,7 +25,8 @@ This guide uses the `anthos` user for the deployment of the required software to
    ```
    git clone https://github.com/GoogleCloudPlatform/anthos-bare-metal-ref-arch.git
    ```
-1. **[Admin Host]** Set the environment variables, if they are not set they will default to the following:
+1. **[Admin Host]** Set the Organization ID or Folder ID where the projects will be created.
+   > This step can be skipped if using existing projects.
    ```
    export ORGANIZATION_ID=
    ```
@@ -33,8 +34,13 @@ This guide uses the `anthos` user for the deployment of the required software to
    ```
    export FOLDER_ID=
    ```
+1. **[Admin Host]** Set the Billing Account ID of the Billing Account for the new projects.
+   > This step can be skipped if using existing projects.
    ```
    export BILLING_ACCOUNT_ID=
+   ```
+1. **[Admin Host]** Set the Project IDs for the new or existing projects, if not set the following defaults will be used:
+   ```
    export NETWORK_PROJECT_ID=project-0-net-prod
    export PLATFORM_PROJECT_ID=project-1-platform-prod
    export APP_PROJECT_ID=project-2-bofa-prod
