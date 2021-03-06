@@ -2,7 +2,7 @@
 
 ## IP address allocation
 
-The default IP address allocations are as follows. If these allocations need to be modify they can be changed in the [ip.sh](scripts/ip.sh) file or cluster configuration files specified in the [Review the cluster configuration files](docs/deploy-to-hosts.md#review-the-cluster-configuration-files) section.
+The default IP address allocations are as follows. If these allocations need to be modify they can be changed in the [conf files](conf/) or cluster configuration files specified in the [Review the cluster configuration files](docs/deploy-to-hosts.md#review-the-cluster-configuration-files) section.
 
 | Cluster               | Hosts         | Pods           | Services     | Load Balancers         |
 | --------------------- | ------------- | -------------- | ------------ | ---------------------- |
@@ -15,64 +15,64 @@ The default IP address allocations are as follows. If these allocations need to 
 
 ```
 # Hosts
-10.185.1.11    metal-1-prod-cp-1
-10.185.1.12    metal-1-prod-cp-2
-10.185.1.13    metal-1-prod-cp-3
-10.185.1.21    metal-1-prod-worker-1
-10.185.1.22    metal-1-prod-worker-2
-10.185.1.23    metal-1-prod-worker-3
+10.185.1.11    metal-1-app-dc1a-prod-cp-1
+10.185.1.12    metal-1-app-dc1a-prod-cp-2
+10.185.1.13    metal-1-app-dc1a-prod-cp-3
+10.185.1.21    metal-1-app-dc1a-prod-worker-1
+10.185.1.22    metal-1-app-dc1a-prod-worker-2
+10.185.1.23    metal-1-app-dc1a-prod-worker-3
 
 # VIPs
-10.185.1.2     metal-1-prod-cp
-10.185.1.3     metal-1-prod-ingress
+10.185.1.2     metal-1-app-dc1a-prod-cp
+10.185.1.3     metal-1-app-dc1a-prod-ingress
 ```
 
 **metal-2-app-dc1b-prod**
 
 ```
 # Hosts
-10.185.2.11    metal-2-prod-cp-1
-10.185.2.12    metal-2-prod-cp-2
-10.185.2.13    metal-2-prod-cp-3
-10.185.2.21    metal-2-prod-worker-1
-10.185.2.22    metal-2-prod-worker-2
-10.185.2.23    metal-2-prod-worker-3
+10.185.2.11    metal-2-app-dc1b-prod-cp-1
+10.185.2.12    metal-2-app-dc1b-prod-cp-2
+10.185.2.13    metal-2-app-dc1b-prod-cp-3
+10.185.2.21    metal-2-app-dc1b-prod-worker-1
+10.185.2.22    metal-2-app-dc1b-prod-worker-2
+10.185.2.23    metal-2-app-dc1b-prod-worker-3
 
 # VIPs
-10.185.2.2     metal-2-prod-cp
-10.185.2.3     metal-2-prod-ingress
+10.185.2.2     metal-2-app-dc1b-prod-cp
+10.185.2.3     metal-2-app-dc1b-prod-ingress
 ```
 
 **metal-3-app-dc2a-prod**
 
 ```
 # Hosts
-10.195.1.11    metal-3-prod-cp-1
-10.195.1.12    metal-3-prod-cp-2
-10.195.1.13    metal-3-prod-cp-3
-10.195.1.21    metal-3-prod-worker-1
-10.195.1.22    metal-3-prod-worker-2
-10.195.1.23    metal-3-prod-worker-3
+10.195.1.11    metal-3-app-dc2a-prod-cp-1
+10.195.1.12    metal-3-app-dc2a-prod-cp-2
+10.195.1.13    metal-3-app-dc2a-prod-cp-3
+10.195.1.21    metal-3-app-dc2a-prod-worker-1
+10.195.1.22    metal-3-app-dc2a-prod-worker-2
+10.195.1.23    metal-3-app-dc2a-prod-worker-3
 
 # VIPs
-10.195.1.2     metal-3-prod-cp
-10.195.1.3     metal-3-prod-ingress
+10.195.1.2     metal-3-app-dc2a-prod-cp
+10.195.1.3     metal-3-app-dc2a-prod-ingress
 ```
 
 **metal-4-app-dc2b-prod**
 
 ```
 # Hosts
-10.195.2.11    metal-4-prod-cp-1
-10.195.2.12    metal-4-prod-cp-2
-10.195.2.13    metal-4-prod-cp-3
-10.195.2.21    metal-4-prod-worker-1
-10.195.2.22    metal-4-prod-worker-2
-10.195.2.23    metal-4-prod-worker-3
+10.195.2.11    metal-4-app-dc2b-prod-cp-1
+10.195.2.12    metal-4-app-dc2b-prod-cp-2
+10.195.2.13    metal-4-app-dc2b-prod-cp-3
+10.195.2.21    metal-4-app-dc2b-prod-worker-1
+10.195.2.22    metal-4-app-dc2b-prod-worker-2
+10.195.2.23    metal-4-app-dc2b-prod-worker-3
 
 # VIPs
-10.195.2.2     metal-4-prod-cp
-10.195.2.3     metal-4-prod-ingress
+10.195.2.2     metal-4-app-dc2b-prod-cp
+10.195.2.3     metal-4-app-dc2b-prod-ingress
 ```
 
 ## Deploy the platform

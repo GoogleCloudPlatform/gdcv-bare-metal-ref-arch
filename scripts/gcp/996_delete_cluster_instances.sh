@@ -17,24 +17,34 @@
 LOG_FILE_PREFIX=gcp-
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
-for cluster in $(seq 1 $NUM_CLUSTERS); do
-    zone=${ZONE[${cluster}]}
-    for worker in $(seq 1 $NUM_WORKER_NODES); do
-        title_no_wait "Delete metal-${cluster}-prod-worker-${worker} in ${ZONE[${cluster}]}"
-        print_and_execute "gcloud compute instances delete metal-${cluster}-prod-worker-${worker} \
---delete-disks=all \
---project=${PLATFORM_PROJECT_ID} \
---quiet \
---zone=${zone}"
-    done
+for cluster_name in $(get_cluster_names); do
+    load_cluster_config ${cluster_name}
     
-    for cp in $(seq 1 $NUM_CP_NODES); do
-        title_no_wait "Delete metal-${cluster}-prod-cp-${cp} in ${ZONE[${cluster}]}"
-        print_and_execute "gcloud compute instances delete metal-${cluster}-prod-cp-${cp} \
+    network_args="--network ${NETWORK_NAME}"
+    if [ ${USE_SHARED_VPC,,} == "true" ]; then
+        network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${REGION}/subnetworks/default"
+    fi
+
+    for worker in $(seq 1 $(get_number_of_worker_nodes)); do
+        hostname="${cluster_name}-worker-${worker}"
+
+        title_no_wait "Delete ${hostname} in ${ZONE}"
+        print_and_execute "gcloud compute instances delete ${hostname} \
 --delete-disks=all \
 --project=${PLATFORM_PROJECT_ID} \
 --quiet \
---zone=${zone}"
+--zone=${ZONE}"
+    done
+
+    for cp in $(seq 1 $(get_number_of_control_plane_nodes)); do
+        hostname="${cluster_name}-cp-${cp}"
+    
+        title_no_wait "Delete ${hostname} in ${ZONE}"
+        print_and_execute "gcloud compute instances delete ${hostname} \
+--delete-disks=all \
+--project=${PLATFORM_PROJECT_ID} \
+--quiet \
+--zone=${ZONE}"
     done
 done
 

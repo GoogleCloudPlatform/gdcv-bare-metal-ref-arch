@@ -18,12 +18,13 @@ LOG_FILE_PREFIX=gcp-
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
 title_no_wait "Delete administrative instance"
-zone=${ZONE["1"]}
+load_global_config
+
 print_and_execute "gcloud compute instances delete bare-metal-admin-1 \
 --delete-disks=all \
 --quiet \
 --project ${PLATFORM_PROJECT_ID} \
---zone=${zone} "
+--zone=${ADMIN_WORKSTATION_ZONE}"
 
 check_local_error
 total_runtime

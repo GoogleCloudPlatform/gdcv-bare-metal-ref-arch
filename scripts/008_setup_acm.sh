@@ -75,9 +75,7 @@ gsutil cp gs://config-management-release/released/latest/config-management-opera
 
 print_and_execute "cd ${ABM_WORK_DIR}"
 export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
-for cluster_num in $(seq 1 $NUM_CLUSTERS); do
-    cluster_name=${CLUSTER_NAME["$cluster_num"]}
-    
+for cluster_name in $(get_cluster_names); do    
     title_no_wait "Deploy ACM on ${cluster_name}"
     
     bold_no_wait "Generate ConfigManagement object"

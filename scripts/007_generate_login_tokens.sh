@@ -21,16 +21,12 @@ mkdir -p ${TEMP_DIR}
 
 title_no_wait "Setup kubectl ctx"
 export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
-for cluster_num in $(seq 1 $NUM_CLUSTERS); do
-    cluster_name=${CLUSTER_NAME["$cluster_num"]}
-    
+for cluster_name in $(get_cluster_names); do
     print_and_execute "kubectl ctx ${cluster_name}=${cluster_name}-admin@${cluster_name}"
 done
 
 cd ${ABM_WORK_DIR}
-for cluster_num in $(seq 1 $NUM_CLUSTERS); do
-    cluster_name=${CLUSTER_NAME["$cluster_num"]}
-    
+for cluster_name in $(get_cluster_names); do   
     title_no_wait "Generate token for ${cluster_name}"
     
     cat <<EOF > ${TEMP_DIR}/gcp-reader.yaml

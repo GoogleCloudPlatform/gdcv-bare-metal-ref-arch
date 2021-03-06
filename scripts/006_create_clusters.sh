@@ -18,8 +18,8 @@ source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
 title_no_wait "Create clusters"
 print_and_execute "cd ${ABM_WORK_DIR}"
-for cluster_num in $(seq 1 $NUM_CLUSTERS); do
-    cluster_name=${CLUSTER_NAME["$cluster_num"]}
+for cluster_name in $(get_cluster_names); do
+    title_no_wait "Creating ${cluster_name}"
     
     print_and_execute "bmctl create cluster -c ${cluster_name}"
 done

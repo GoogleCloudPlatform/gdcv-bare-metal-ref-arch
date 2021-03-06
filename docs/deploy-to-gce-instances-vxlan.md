@@ -35,6 +35,10 @@ See the [Logging into gcloud](https://cloud.google.com/anthos/gke/docs/bare-meta
    export PLATFORM_PROJECT_ID=project-1-platform-prod
    export APP_PROJECT_ID=project-2-bofa-prod
    ```
+1. **[Cloud Shell]** Enable additional configuration for GCE with VXLAN:
+   ```
+   export ABM_ADDITIONAL_CONF=gce-vxlan
+   ```   
 1. **[Cloud Shell]** Change directory into `anthos-bare-metal-ref-arch`
    ```
    cd anthos-bare-metal-ref-arch
@@ -97,6 +101,10 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    export PLATFORM_PROJECT_ID=project-1-platform-prod
    export APP_PROJECT_ID=project-2-bofa-prod
    ```
+1. **[Admin Host]** Enable additional configuration for GCE with VXLAN
+   ```
+   export ABM_ADDITIONAL_CONF=gce-vxlan
+   ```   
 1. **[Admin Host]** Change directory into `anthos-bare-metal-ref-arch`
    ```
    cd anthos-bare-metal-ref-arch
@@ -143,17 +151,13 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ```
    ${ABM_WORK_DIR}/scripts/gcp/004_validate_deployment_user.sh
    ```
-1. **[Admin Host]** Generate the host file
-   ```
-   ${ABM_WORK_DIR}/scripts/gcp/005_generate_host_file.sh
-   ```
 1. **[Admin Host]** Create the VXLAN network
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/006_create_vxlan_network.sh
+   ${ABM_WORK_DIR}/scripts/gcp/005_create_vxlan_network.sh
    ```
 1. **[Admin Host]** Validate the VXLAN network
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/007_validate_vxlan_network.sh
+   ${ABM_WORK_DIR}/scripts/gcp/006_validate_vxlan_network.sh
    ```
 
 ## Create a Cloud Monitoring workspace
