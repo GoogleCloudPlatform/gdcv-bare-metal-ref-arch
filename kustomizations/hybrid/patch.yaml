@@ -14,16 +14,16 @@
 apiVersion: baremetal.cluster.gke.io/v1
 kind: Cluster
 metadata:
-  name: metal-4-apps-dc2b-prod
-  namespace: cluster-metal-4-apps-dc2b-prod
+  name: ${CLUSTER_NAME}
+  namespace: cluster-${CLUSTER_NAME}
 spec:
   clusterNetwork:
     pods:
       cidrBlocks:
-      - ${METAL_4_PROD_K8S_POD_CIDR}
+      - ${K8S_POD_CIDR}
     services:
       cidrBlocks:
-      - ${METAL_4_PROD_K8S_SERVICE_CIDR}
+      - ${K8S_SERVICE_CIDR}
   clusterOperations:
     enableApplication: true
     location: ${CLOUD_OPS_REGION}
@@ -31,21 +31,21 @@ spec:
   controlPlane:
     nodePoolSpec:
       nodes:
-        - address: ${METAL_4_PROD_CP_1_IP}
-        - address: ${METAL_4_PROD_CP_2_IP}
-        - address: ${METAL_4_PROD_CP_3_IP}
+        - address: ${CP_1_IP}
+        - address: ${CP_2_IP}
+        - address: ${CP_3_IP}
   gkeConnect:
     connectServiceAccountSecret:
     projectID: ${PLATFORM_PROJECT_ID}
   loadBalancer:
     addressPools:
     - addresses:
-      - ${METAL_4_PROD_LB_ADDRESS_POOL}
+      - ${LB_ADDRESS_POOL}
       name: pool1
     mode: bundled
     vips:
-      controlPlaneVIP: ${METAL_4_PROD_CP_LB_VIP}
-      ingressVIP: ${METAL_4_PROD_INGRESS_LB_VIP}
+      controlPlaneVIP: ${CP_LB_VIP}
+      ingressVIP: ${INGRESS_LB_VIP}
   nodeAccess:
     loginUser: ${DEPLOYMENT_USER}
   type: hybrid
@@ -54,10 +54,10 @@ apiVersion: baremetal.cluster.gke.io/v1
 kind: NodePool
 metadata:
   name: node-pool-1
-  namespace: cluster-metal-4-apps-dc2b-prod
+  namespace: cluster-${CLUSTER_NAME}
 spec:
-  clusterName: metal-4-apps-dc2b-prod
+  clusterName: ${CLUSTER_NAME}
   nodes:
-    - address: ${METAL_4_PROD_WORKER_1_IP}
-    - address: ${METAL_4_PROD_WORKER_2_IP}
-    - address: ${METAL_4_PROD_WORKER_3_IP}
+    - address: ${WORKER_1_IP}
+    - address: ${WORKER_2_IP}
+    - address: ${WORKER_3_IP}

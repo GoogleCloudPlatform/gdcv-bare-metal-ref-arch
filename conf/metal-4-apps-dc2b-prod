@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,7 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-resources:
-  - metal-2-apps-dc1b-prod.yaml
-patches:
-  - metal-2-apps-dc1b-prod-patch.yaml
+
+# Hosts
+export CP_1_IP=10.195.2.11
+export CP_2_IP=10.195.2.12
+export CP_3_IP=10.195.2.13
+export WORKER_1_IP=10.195.2.18
+export WORKER_2_IP=10.195.2.19
+export WORKER_3_IP=10.195.2.20
+
+# K8s networks
+export K8S_POD_CIDR=192.168.0.0/16
+export K8S_SERVICE_CIDR=10.96.0.0/12
+
+# Load balancers and VIPs
+export CP_LB_VIP=10.195.2.2
+export INGRESS_LB_VIP=10.195.2.3
+export LB_ADDRESS_POOL=10.195.2.3-10.195.2.10

@@ -17,14 +17,20 @@
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
 ASM_DIR=/usr/local/share/istio-${ASM_VERSION}
+
 TEMP_DIR=${ABM_WORK_DIR}/tmp
 mkdir -p ${TEMP_DIR}
+cd ${TEMP_DIR}
 
-title_no_wait "Create istio-system.yaml"
-kubectl create namespace istio-system --dry-run -o yaml > ${TEMP_DIR}/istio-system.yaml
+export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
+for cluster_name in $(get_cluster_names); do
+    load_cluster_config ${cluster_name}
 
-title_no_wait "Create istiod-service.yaml"
-cat <<EOF > ${TEMP_DIR}/istiod-service.yaml
+    title_no_wait "Create istio-system.yaml"
+    kubectl create namespace istio-system --dry-run -o yaml > ${TEMP_DIR}/istio-system.yaml
+
+    title_no_wait "Create istiod-service.yaml"
+    cat <<EOF > ${TEMP_DIR}/istiod-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -55,15 +61,9 @@ spec:
     istio.io/rev: ${ASM_REVISION}
 EOF
 
-cd ${TEMP_DIR}
-
-export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
-for cluster_num in $(seq 1 $NUM_CLUSTERS); do
-    cluster_name=${CLUSTER_NAME["$cluster_num"]}
-    
     title_no_wait "Create istio-system namespace on ${cluster_name}"
     print_and_execute "kubectl apply -f ${TEMP_DIR}/istio-system.yaml"
-    
+
     title_no_wait "Install ASM on ${cluster_name}"
     
     print_and_execute "istioctl install --context=${cluster_name} --set profile=asm-multicloud --set revision=${ASM_REVISION}"

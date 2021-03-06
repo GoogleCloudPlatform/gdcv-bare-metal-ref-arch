@@ -16,6 +16,7 @@
 
 export start_timestamp=`date +%s`
 
+source ${ABM_WORK_DIR}/scripts/helpers/configuration.sh
 source ${ABM_WORK_DIR}/scripts/helpers/functions.sh
 
 pv_installed=`which pv`
@@ -36,40 +37,9 @@ touch ${LOG_FILE}
 exec 2>&1
 exec &> >(tee -i ${LOG_FILE})
 
-declare -a CLUSTER_NAME
-CLUSTER_NAME=(
-    ["1"]="metal-1-apps-dc1a-prod"
-    ["2"]="metal-2-apps-dc1b-prod"
-    ["3"]="metal-3-apps-dc2a-prod"
-    ["4"]="metal-4-apps-dc2b-prod"
-)
-
-declare -a IP_PREFIX
-IP_PREFIX=(
-    ["1"]="10.185.1"
-    ["2"]="10.185.2"
-    ["3"]="10.195.1"
-    ["4"]="10.195.2"
-)
-
-declare -a REGION
-REGION=(
-    ["1"]="us-central1"
-    ["2"]="us-central1"
-    ["3"]="us-west1"
-    ["4"]="us-west1"
-)
-
-declare -a ZONE
-ZONE=(
-    ["1"]="us-central1-a"
-    ["2"]="us-central1-b"
-    ["3"]="us-west1-a"
-    ["4"]="us-west1-b"
-)
-
 VALID_CHARACTERS="[:alnum:]_/\.\-"
 
+grep -q "export ABM_ADDITIONAL_CONF=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ABM_ADDITIONAL_CONF=${ABM_ADDITIONAL_CONF:-}" >> ${ENVIRONMENT_FILE}
 grep -q "export ABM_WORK_DIR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ABM_WORK_DIR=${ABM_WORK_DIR}" >> ${ENVIRONMENT_FILE}
 grep -q "export APP_NAMESPACE=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export APP_NAMESPACE=${APP_NAMESPACE:-bofa}" >> ${ENVIRONMENT_FILE}
 grep -q "export APP_PROJECT_ID=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export APP_PROJECT_ID=${APP_PROJECT_ID:-project-2-bofa-prod}" >> ${ENVIRONMENT_FILE}
@@ -83,9 +53,6 @@ grep -q "export DEPLOYMENT_USER=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} ||
 grep -q "export FOLDER_ID=" ${ENVIRONMENT_FILE} || echo -e "export FOLDER_ID=${FOLDER_ID:-}" >> ${ENVIRONMENT_FILE}
 grep -q "export NETWORK_NAME=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export NETWORK_NAME=${NETWORK_NAME:-default}" >> ${ENVIRONMENT_FILE}
 grep -q "export NETWORK_PROJECT_ID=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export NETWORK_PROJECT_ID=${NETWORK_PROJECT_ID:-project-0-net-prod}" >> ${ENVIRONMENT_FILE}
-grep -q "export NUM_CLUSTERS=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export NUM_CLUSTERS=${NUM_CLUSTERS:-4}" >> ${ENVIRONMENT_FILE}
-grep -q "export NUM_CP_NODES=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export NUM_CP_NODES=${NUM_CP_NODES:-3}" >> ${ENVIRONMENT_FILE}
-grep -q "export NUM_WORKER_NODES=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export NUM_WORKER_NODES=${NUM_WORKER_NODES:-3}" >> ${ENVIRONMENT_FILE}
 grep -q "export ORGANIZATION_ID=" ${ENVIRONMENT_FILE} || echo -e "export ORGANIZATION_ID=${ORGANIZATION_ID:-}" >> ${ENVIRONMENT_FILE}
 grep -q "export PLATFORM_PROJECT_ID=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export PLATFORM_PROJECT_ID=${PLATFORM_PROJECT_ID:-project-1-platform-prod}" >> ${ENVIRONMENT_FILE}
 grep -q "export USE_SHARED_VPC=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export USE_SHARED_VPC=${USE_SHARED_VPC:-true}" >> ${ENVIRONMENT_FILE}
@@ -93,6 +60,8 @@ grep -q "export USE_SHARED_VPC=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || 
 source ${ENVIRONMENT_FILE}
 
 # Variable with dependencies above
+grep -q "export ABM_CONF_DIR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ABM_CONF_DIR=${ABM_CONF_DIR:-${ABM_WORK_DIR}/conf}" >> ${ENVIRONMENT_FILE}
+
 DEPLOYMENT_USER_HOME=`eval echo "~${DEPLOYMENT_USER}"`
 if [[ ! ${DEPLOYMENT_USER_HOME} = ~* ]] || [ ! -z ${DEPLOYMENT_USER_SSH_KEY} ]; then
     grep -q "export DEPLOYMENT_USER_SSH_KEY=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export DEPLOYMENT_USER_SSH_KEY=${DEPLOYMENT_USER_SSH_KEY:-${DEPLOYMENT_USER_HOME}/.ssh/id_rsa}" >> ${ENVIRONMENT_FILE}
@@ -100,11 +69,6 @@ fi
 
 sort -o ${ENVIRONMENT_FILE} ${ENVIRONMENT_FILE}
 source ${ENVIRONMENT_FILE}
-
-HOSTS_FILE=${ABM_WORK_DIR}/scripts/hosts.sh
-if [ -f ${HOSTS_FILE} ]; then
-    source ${HOSTS_FILE}
-fi
 
 # Add environment file to .profile file
 grep -q "${ENVIRONMENT_FILE}" ~/.profile || echo -e "source ${ENVIRONMENT_FILE}" >> ~/.profile

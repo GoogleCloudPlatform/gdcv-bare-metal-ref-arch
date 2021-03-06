@@ -17,8 +17,8 @@
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
 export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
-for cluster_num in $(seq 1 $NUM_CLUSTERS); do
-    cluster_name=${CLUSTER_NAME["$cluster_num"]}
+for cluster_name in $(get_cluster_names); do
+    load_cluster_config ${cluster_name}
     
     title_no_wait "Deploying application on ${cluster_name}"
     print_and_execute "kubectl --context=${cluster_name} label namespace ${APP_NAMESPACE} istio.io/rev=${ASM_REVISION} --overwrite"

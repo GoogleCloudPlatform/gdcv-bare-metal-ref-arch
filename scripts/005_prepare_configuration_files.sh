@@ -15,7 +15,6 @@
 # limitations under the License.
 
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
-source ${ABM_WORK_DIR}/scripts/ip.sh
 
 title_no_wait "Download bmctl-${BMCTL_VERSION} binary"
 
@@ -31,8 +30,9 @@ fi
 
 title_no_wait "Create cluster configurations"
 cd ${ABM_WORK_DIR}
-for cluster_num in $(seq 1 $NUM_CLUSTERS); do
-    cluster_name=${CLUSTER_NAME["$cluster_num"]}
+for cluster_name in $(get_cluster_names); do
+    title_no_wait "Creating configuration for ${cluster_name}"
+    load_cluster_config ${cluster_name}
 
     bold_no_wait "${cluster_name}"
     cluster_yaml=bmctl-workspace/${cluster_name}/${cluster_name}.yaml
@@ -40,11 +40,15 @@ for cluster_num in $(seq 1 $NUM_CLUSTERS); do
         print_and_execute "bmctl create config --cluster ${cluster_name} --create-service-accounts --enable-apis --project-id ${PLATFORM_PROJECT_ID}"
         if [ $? -eq 0 ]; then
             bold_no_wait "Applying kustomizations"
+
             cp -p ${cluster_yaml} ${cluster_yaml}.orig
             sed -i '0,/^---$/d' ${cluster_yaml}
 
-            cp -p ${ABM_WORK_DIR}/kustomizations/${cluster_name}/* ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/
-            kubectl kustomize bmctl-workspace/${cluster_name} | envsubst > ${cluster_yaml}.tmp
+            KUSTOMIZATIONS_TYPE="hybrid"
+            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATIONS_TYPE}/kustomization.yaml > ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/kustomization.yaml
+            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATIONS_TYPE}/patch.yaml> ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/patch.yaml
+
+            kubectl kustomize bmctl-workspace/${cluster_name} > ${cluster_yaml}.tmp
             sed '/- address: $/d' -i ${cluster_yaml}.tmp
             mv ${cluster_yaml}.tmp ${cluster_yaml}
             
