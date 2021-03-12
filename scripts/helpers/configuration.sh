@@ -33,6 +33,11 @@ get_conf_files () {
 }
 export -f get_conf_files
 
+get_control_plane_node_addresses () {
+    echo $(env | egrep 'CP_[0-9]+_IP=' | awk -F= '{print $2}')
+}
+export -f get_control_plane_node_addresses
+
 get_number_of_control_plane_nodes () {
     echo $(env | egrep 'CP_[0-9]+_IP=' | wc -l)
 }
@@ -42,6 +47,11 @@ get_number_of_worker_nodes () {
     echo $(env | egrep 'WORKER_[0-9]+_IP=' | wc -l)
 }
 export -f get_number_of_worker_nodes
+
+get_worker_node_addresses () {
+    echo $(env | egrep 'WORKER_[0-9]+_IP=' | awk -F= '{print $2}')
+}
+export -f get_worker_node_addresses
 
 load_additional_config() {
     cluster_name=${1}
@@ -72,7 +82,6 @@ load_cluster_config () {
 }
 export -f load_cluster_config
 
-
 load_global_config () {
     unset_config
 
@@ -82,7 +91,6 @@ load_global_config () {
     fi
 }
 export -f load_global_config
-
 
 unset_config () {
     conf_variables=`cat $(get_conf_files) | egrep "^export" | awk 'BEGIN{FS="[= ]"}{print $2}' | sort | uniq`

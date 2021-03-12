@@ -31,9 +31,7 @@ spec:
   controlPlane:
     nodePoolSpec:
       nodes:
-        - address: ${CP_1_IP}
-        - address: ${CP_2_IP}
-        - address: ${CP_3_IP}
+${CONTROL_PLANE_NODE_POOL}
   gkeConnect:
     connectServiceAccountSecret:
     projectID: ${PLATFORM_PROJECT_ID}
@@ -58,6 +56,4 @@ metadata:
 spec:
   clusterName: ${CLUSTER_NAME}
   nodes:
-    - address: ${WORKER_1_IP}
-    - address: ${WORKER_2_IP}
-    - address: ${WORKER_3_IP}
+${WORKER_NODE_POOL}

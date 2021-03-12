@@ -34,6 +34,18 @@ for cluster_name in $(get_cluster_names); do
     title_no_wait "Creating configuration for ${cluster_name}"
     load_cluster_config ${cluster_name}
 
+    control_plane_node_pool_addresses=""
+    for cp_address in $(get_control_plane_node_addresses); do
+        control_plane_node_pool_addresses+=$(printf "      - address: %s\n" "${cp_address}")
+    done
+    export CONTROL_PLANE_NODE_POOL=${control_plane_node_pool_addresses}
+
+    worker_node_pool_addresses=""
+    for worker_address in $(get_worker_node_addresses); do
+        worker_node_pool_addresses+=$(printf "  - address: %s\n" "${worker_address}")
+    done
+    export WORKER_NODE_POOL=${worker_node_pool_addresses}
+
     bold_no_wait "${cluster_name}"
     cluster_yaml=bmctl-workspace/${cluster_name}/${cluster_name}.yaml
     if [ ! -f "${cluster_yaml}" ]; then
@@ -49,7 +61,6 @@ for cluster_name in $(get_cluster_names); do
             envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATIONS_TYPE}/patch.yaml> ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/patch.yaml
 
             kubectl kustomize bmctl-workspace/${cluster_name} > ${cluster_yaml}.tmp
-            sed '/- address: $/d' -i ${cluster_yaml}.tmp
             mv ${cluster_yaml}.tmp ${cluster_yaml}
             
             cat ${ABM_WORK_DIR}/kustomizations/bmctl-config.yaml | envsubst > ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/bmctl-config.yaml
@@ -66,6 +77,9 @@ for cluster_name in $(get_cluster_names); do
         error_no_wait "Configuration for cluster '${cluster_name}' already exists at ${cluster_yaml}."
         error_no_wait "Delete the existing configuration file to generate a new configuration file"
     fi
+
+    unset CONTROL_PLANE_NODE_POOL
+    unset WORKER_NODE_POOL
 done
 
 mkdir -p ${ABM_WORK_DIR}/keys
