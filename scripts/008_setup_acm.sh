@@ -105,6 +105,13 @@ EOF
     print_and_execute "kubectl --context=${cluster_name} apply -f ${TEMP_DIR}/acm.yaml"
 done
 
+export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
+for cluster_name in $(get_cluster_names); do
+    title_no_wait "Wating for ACM to deploy in ${cluster_name}"
+    print_and_execute "kubectl --context=${cluster_name} --namespace=config-management-system wait --for=condition=available --timeout=600s deployments --all"
+    print_and_execute "kubectl --context=${cluster_name} --namespace=gatekeeper-system wait --for=condition=available --timeout=600s deployments --all"
+done
+
 check_local_error
 total_runtime
 exit ${local_error}
