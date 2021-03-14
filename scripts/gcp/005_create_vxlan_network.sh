@@ -122,6 +122,9 @@ sudo chmod +x ${ADMIN_CRONJOB_FILE}
 sudo mv ${ADMIN_CRONJOB_FILE} ${VXLAN_CRONJOB_FILE}
 sudo crontab ${VXLAN_CRONTAB_FILE}
 
+bold_no_wait "Wait 60 seconds to ensure networks are created"
+print_and_execute "sleep 60"
+
 check_local_error
 total_runtime
 exit ${local_error}

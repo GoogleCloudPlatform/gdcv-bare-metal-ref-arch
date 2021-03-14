@@ -17,8 +17,10 @@
 LOG_FILE_PREFIX=gcp-
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
+title_no_wait "Validating VXLAN networks"
+
 for cluster_name in $(get_cluster_names); do
-    title_no_wait "${cluster_name}"
+    title_no_wait "Validating VXLAN network for ${cluster_name}"
     load_cluster_config ${cluster_name}
     
     for cp in $(seq 1 $(get_number_of_control_plane_nodes)); do
