@@ -113,8 +113,8 @@ for cluster_name in $(get_cluster_names); do
     done
 done
 
-echo "ip addr add 10.185.0.10/20 dev vxlan185" >> ${ADMIN_CRONJOB_FILE}
-echo "ip addr add 10.195.0.10/20 dev vxlan195" >> ${ADMIN_CRONJOB_FILE}
+echo "ip addr add 10.185.0.254/20 dev vxlan185" >> ${ADMIN_CRONJOB_FILE}
+echo "ip addr add 10.195.0.254/20 dev vxlan195" >> ${ADMIN_CRONJOB_FILE}
 echo "ip link set up dev vxlan185" >> ${ADMIN_CRONJOB_FILE}
 echo "ip link set up dev vxlan195" >> ${ADMIN_CRONJOB_FILE}
 
