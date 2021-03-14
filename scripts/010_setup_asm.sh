@@ -62,15 +62,24 @@ spec:
 EOF
 
     title_no_wait "Create istio-system namespace on ${cluster_name}"
-    print_and_execute "kubectl apply -f ${TEMP_DIR}/istio-system.yaml"
+    print_and_execute "kubectl --context=${cluster_name} apply -f ${TEMP_DIR}/istio-system.yaml"
 
     title_no_wait "Install ASM on ${cluster_name}"
     
     print_and_execute "istioctl install --context=${cluster_name} --set profile=asm-multicloud --set revision=${ASM_REVISION}"
     echo
+
+    print_and_execute "kubectl --context=${cluster_name} apply -f ${TEMP_DIR}/istiod-service.yaml"
     
-    # TODO: Is this needed or is it done by the installer?
-    #kubectl apply -f istiod-service.yaml
+    asm_release_version=$(echo ${ASM_VERSION} | awk -F. '{print $1"."$2}')
+    asm_tmp_dir=${TEMP_DIR}/asm-${asm_release_version}
+
+    title_no_wait "Download the ASM ${asm_release_version} kpt package"
+    print_and_execute "kpt pkg get https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-${asm_release_version}-asm ${asm_tmp_dir}"
+
+    title_no_wait "Enabling the Canonical Service controller"
+    print_and_execute " kubectl --context=${cluster_name} apply -f ${asm_tmp_dir}/canonical-service/controller.yaml"
+
 done
 
 check_local_error
