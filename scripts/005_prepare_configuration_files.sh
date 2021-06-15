@@ -36,13 +36,13 @@ for cluster_name in $(get_cluster_names); do
 
     control_plane_node_pool_addresses=""
     for cp_address in $(get_control_plane_node_addresses); do
-        control_plane_node_pool_addresses+=$(printf "      - address: %s\n" "${cp_address}")
+        control_plane_node_pool_addresses+="      - address: ${cp_address}\n"
     done
     export CONTROL_PLANE_NODE_POOL=${control_plane_node_pool_addresses}
 
     worker_node_pool_addresses=""
     for worker_address in $(get_worker_node_addresses); do
-        worker_node_pool_addresses+=$(printf "  - address: %s\n" "${worker_address}")
+        worker_node_pool_addresses+="  - address: ${worker_address}\n"
     done
     export WORKER_NODE_POOL=${worker_node_pool_addresses}
 
@@ -58,7 +58,7 @@ for cluster_name in $(get_cluster_names); do
 
             KUSTOMIZATIONS_TYPE="hybrid"
             envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATIONS_TYPE}/kustomization.yaml > ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/kustomization.yaml
-            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATIONS_TYPE}/patch.yaml> ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/patch.yaml
+            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATIONS_TYPE}/patch.yaml | sed 's/\\n/\n/g' > ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/patch.yaml
 
             kubectl kustomize bmctl-workspace/${cluster_name} > ${cluster_yaml}.tmp
             mv ${cluster_yaml}.tmp ${cluster_yaml}
