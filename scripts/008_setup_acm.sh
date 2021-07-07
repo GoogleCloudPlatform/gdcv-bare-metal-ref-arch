@@ -47,7 +47,7 @@ fi
 
 echo
 bold_no_wait "=============================================================================================================="
-bold_no_wait "ACM Repository created at: https://source.cloud.google.com/${PLATFORM_PROJECT_ID}/acm/+/main "
+bold_no_wait "ACM Repository: https://source.cloud.google.com/${PLATFORM_PROJECT_ID}/acm/+/main:"
 bold_no_wait "=============================================================================================================="
 echo
 
@@ -67,43 +67,40 @@ bold_no_wait "==================================================================
 bold_and_wait "When the key has been added"
 
 title_no_wait "Enabling the ACM feature"
-print_and_execute "gcloud services enable --project ${PLATFORM_PROJECT_ID} anthosconfigmanagement.googleapis.com"
-print_and_execute "gcloud alpha container hub config-management enable --project ${PLATFORM_PROJECT_ID}"
-
-title_no_wait "Download config-management-operator.yaml"
-gsutil cp gs://config-management-release/released/latest/config-management-operator.yaml ${TEMP_DIR}/
+print_and_execute "gcloud services enable --project ${PLATFORM_PROJECT_ID} anthos.googleapis.com anthosconfigmanagement.googleapis.com"
+print_and_execute "gcloud beta container hub config-management enable --project=${PLATFORM_PROJECT_ID}"
 
 print_and_execute "cd ${ABM_WORK_DIR}"
 export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do    
     title_no_wait "Deploy ACM on ${cluster_name}"
     
-    bold_no_wait "Generate ConfigManagement object"
-    cat <<EOF > ${TEMP_DIR}/acm.yaml
-apiVersion: configmanagement.gke.io/v1
-kind: ConfigManagement
-metadata:
-  name: config-management
+    bold_no_wait "Generate the apply-spec.yaml"
+    cat <<EOF > ${TEMP_DIR}/apply-spec.yaml
+applySpecVersion: 1
 spec:
-  clusterName: ${cluster_name}
-  policyController:
+  configSync:
     enabled: true
-    templateLibraryInstalled: true
-  git:
+    sourceFormat: hierarchy
     syncRepo: ssh://${GCP_ACCOUNT}@${ACM_SOURCE_REPOSITORY}
     syncBranch: main
     secretType: ssh
+    policyDir: .
+  policyController:
+    enabled: true
 EOF
-    
-    bold_no_wait "Apply config-management-operator.yaml"
-    print_and_execute "kubectl --context=${cluster_name} apply -f ${TEMP_DIR}/config-management-operator.yaml"
-    
-    bold_no_wait "Create crm-credentials secret"
+    bold_no_wait "Create the config-management-system namespace"
+    print_and_execute "kubectl --context=${cluster_name} create namespace config-management-system"
+
+    bold_no_wait "Apply the apply-spec.yaml"
+    print_and_execute "gcloud beta container hub config-management apply --membership=${cluster_name} --config=${TEMP_DIR}/apply-spec.yaml --project=${PLATFORM_PROJECT_ID}"
+
+    bold_no_wait "Create git-creds secret"
     print_and_execute "kubectl --context=${cluster_name} create secret generic git-creds --namespace=config-management-system --from-file=ssh=${SCM_SSH_KEY}"
-    
-    bold_no_wait "Apply ConfigManagement"
-    print_and_execute "kubectl --context=${cluster_name} apply -f ${TEMP_DIR}/acm.yaml"
 done
+
+bold_no_wait "Wait for configuration updates to be applied"
+sleep 60
 
 export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do

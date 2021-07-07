@@ -14,16 +14,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+LOG_FILE_PREFIX=gcp-
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
-export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
-for cluster_name in $(get_cluster_names); do 
-    title_no_wait "Verify application on ${cluster_name}"
-    print_and_execute "kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} get pods"
-    print_and_execute "SERVICE_EXTERNAL_IP=$(kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} get service/frontend --output jsonpath='{.status.loadBalancer.ingress[0].ip}')"
-    print_and_execute "curl --fail --output /dev/null --show-error --silent http://${SERVICE_EXTERNAL_IP}/"
-    echo
-done
+TEMP_DIR=${ABM_WORK_DIR}/tmp/vxlan
+mkdir -p ${TEMP_DIR}
+
+VXLAN_CRONTAB_FILE=${TEMP_DIR}/vxlan.crontab
+VXLAN_CRONJOB_FILE=/etc/cron.d/vxlan-setup
+
+title_no_wait "Remove the crontab entry"
+crontab -l | grep -v "vxlan-setup ${VXLAN_CRONJOB_FILE}" > ${VXLAN_CRONTAB_FILE}
+sudo crontab ${VXLAN_CRONTAB_FILE}
+
+title_no_wait "Remove the cronjob file"
+sudo rm -f ${VXLAN_CRONJOB_FILE}
+
+title_no_wait "Remove the interfaces"
+sudo ip link del vxlan185 type vxlan id 185 dev ens4 dstport 0
+sudo ip link del vxlan195 type vxlan id 195 dev ens4 dstport 0
+
+title_no_wait "Remove the temporary directory"
+rm -rf ${TEMP_DIR}
 
 check_local_error
 total_runtime

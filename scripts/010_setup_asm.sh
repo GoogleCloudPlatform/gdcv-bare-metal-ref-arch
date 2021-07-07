@@ -20,17 +20,35 @@ ASM_DIR=/usr/local/share/istio-${ASM_VERSION}
 
 TEMP_DIR=${ABM_WORK_DIR}/tmp
 mkdir -p ${TEMP_DIR}
+
+ASM_TEMP_DIR=${TEMP_DIR}/asm-${ASM_RELEASE}
+
+title_no_wait "Enable APIs"
+print_and_execute "gcloud services enable --project ${PLATFORM_PROJECT_ID} \
+anthos.googleapis.com \
+cloudtrace.googleapis.com \
+cloudresourcemanager.googleapis.com \
+container.googleapis.com \
+compute.googleapis.com \
+gkeconnect.googleapis.com \
+gkehub.googleapis.com \
+iam.googleapis.com \
+iamcredentials.googleapis.com \
+logging.googleapis.com \
+meshca.googleapis.com \
+meshtelemetry.googleapis.com \
+meshconfig.googleapis.com \
+monitoring.googleapis.com \
+stackdriver.googleapis.com \
+sts.googleapis.com"
+
+rm -rf ${ASM_TEMP_DIR}
+title_no_wait "Download the ASM ${ASM_RELEASE} kpt package"
+print_and_execute "kpt pkg get https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-${ASM_RELEASE}-asm ${ASM_TEMP_DIR}"
 cd ${TEMP_DIR}
 
-export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
-for cluster_name in $(get_cluster_names); do
-    load_cluster_config ${cluster_name}
-
-    title_no_wait "Create istio-system.yaml"
-    kubectl create namespace istio-system --dry-run -o yaml > ${TEMP_DIR}/istio-system.yaml
-
-    title_no_wait "Create istiod-service.yaml"
-    cat <<EOF > ${TEMP_DIR}/istiod-service.yaml
+title_no_wait "Create the istiod-service.yaml file"
+cat <<EOF > ${TEMP_DIR}/istiod-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -61,25 +79,45 @@ spec:
     istio.io/rev: ${ASM_REVISION}
 EOF
 
-    title_no_wait "Create istio-system namespace on ${cluster_name}"
-    print_and_execute "kubectl --context=${cluster_name} apply -f ${TEMP_DIR}/istio-system.yaml"
+export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
+for cluster_name in $(get_cluster_names); do
+    load_cluster_config ${cluster_name}
 
-    title_no_wait "Install ASM on ${cluster_name}"
-    
-    print_and_execute "istioctl install --context=${cluster_name} --set profile=asm-multicloud --set revision=${ASM_REVISION}"
-    echo
+    title_no_wait "Initialize the mesh configuration"
+    IDENTITY_PROVIDER="$(kubectl --context=${cluster_name} get memberships.hub.gke.io membership -o=jsonpath='{.spec.identity_provider}')"    
 
+    IDENTITY="$(echo "${IDENTITY_PROVIDER}" | sed 's/^https:\/\/gkehub.googleapis.com\/projects\/\(.*\)\/locations\/global\/memberships\/\(.*\)$/\1 \2/g')"
+
+    read FLEET_PROJECT_ID HUB_MEMBERSHIP_ID <<< ${IDENTITY}
+
+    POST_DATA='{"workloadIdentityPools":["'${FLEET_PROJECT_ID}'.hub.id.goog","'${FLEET_PROJECT_ID}'.svc.id.goog"]}'
+
+    print_and_execute "curl --fail --output /dev/null --show-error --silent --request POST --header \"Content-Type: application/json\" --header \"Authorization: Bearer $(gcloud auth print-access-token)\" --data '${POST_DATA}' https://meshconfig.googleapis.com/v1alpha1/projects/${FLEET_PROJECT_ID}:initialize"
+
+    title_no_wait "Configure the installation"
+    FLEET_PROJECT_NUMBER=$(gcloud projects describe "${FLEET_PROJECT_ID}" --format="value(projectNumber)")
+
+    CLUSTER_NAME="${HUB_MEMBERSHIP_ID}"
+
+    CLUSTER_LOCATION="global"
+
+    HUB_IDP_URL="$(kubectl --context=${cluster_name} get memberships.hub.gke.io membership -o=jsonpath='{.spec.identity_provider}')"
+
+    kpt cfg set ${ASM_TEMP_DIR} gcloud.core.project ${FLEET_PROJECT_ID}
+    kpt cfg set ${ASM_TEMP_DIR} gcloud.container.cluster ${CLUSTER_NAME}
+    kpt cfg set ${ASM_TEMP_DIR} gcloud.compute.location ${CLUSTER_LOCATION}
+    kpt cfg set ${ASM_TEMP_DIR} anthos.servicemesh.hub gcr.io/gke-release/asm
+    kpt cfg set ${ASM_TEMP_DIR} anthos.servicemesh.rev ${ASM_REVISION}
+    kpt cfg set ${ASM_TEMP_DIR} anthos.servicemesh.tag ${ASM_VERSION}
+    kpt cfg set ${ASM_TEMP_DIR} gcloud.project.environProjectNumber ${FLEET_PROJECT_NUMBER}
+    kpt cfg set ${ASM_TEMP_DIR} anthos.servicemesh.hubTrustDomain ${FLEET_PROJECT_ID}.svc.id.goog
+    kpt cfg set ${ASM_TEMP_DIR} anthos.servicemesh.hub-idp-url "${HUB_IDP_URL}"
+
+    title_no_wait "Install Anthos Service Mesh"    
+    print_and_execute "istioctl install --context=${cluster_name} -f ${ASM_TEMP_DIR}/istio/istio-operator.yaml -f ${ASM_TEMP_DIR}/istio/options/hub-meshca.yaml --revision=${ASM_REVISION} --skip-confirmation"
+
+    title_no_wait "Configuring the validating webhook"
     print_and_execute "kubectl --context=${cluster_name} apply -f ${TEMP_DIR}/istiod-service.yaml"
-    
-    asm_release_version=$(echo ${ASM_VERSION} | awk -F. '{print $1"."$2}')
-    asm_tmp_dir=${TEMP_DIR}/asm-${asm_release_version}
-
-    title_no_wait "Download the ASM ${asm_release_version} kpt package"
-    print_and_execute "kpt pkg get https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-${asm_release_version}-asm ${asm_tmp_dir}"
-
-    title_no_wait "Enabling the Canonical Service controller"
-    print_and_execute " kubectl --context=${cluster_name} apply -f ${asm_tmp_dir}/canonical-service/controller.yaml"
-
 done
 
 check_local_error
