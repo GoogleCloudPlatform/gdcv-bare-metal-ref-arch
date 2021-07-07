@@ -17,6 +17,12 @@
 SCRIPT_PATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 export ABM_WORK_DIR=$(dirname ${SCRIPT_PATH%/*})
 
+if [[ ! -z "${BMCTL_VERSION}" ]]; then
+    echo "BMCTL_VERSION is set, a previous configuration file could change default values"
+    echo -e "--> Press ENTER to continue..."
+    read -p ''
+fi
+
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
 total_runtime

@@ -23,7 +23,7 @@ print_and_execute "gcloud iam service-accounts delete anthos-baremetal-cloud-ops
 title_no_wait "Delete anthos-baremetal-connect GSA"
 print_and_execute "gcloud iam service-accounts delete anthos-baremetal-connect@${PLATFORM_PROJECT_ID}.iam.gserviceaccount.com --quiet"
 
-title_no_wait "Delete nthos-baremetal-gcr GSA"
+title_no_wait "Delete anthos-baremetal-gcr GSA"
 print_and_execute "gcloud iam service-accounts delete anthos-baremetal-gcr@${PLATFORM_PROJECT_ID}.iam.gserviceaccount.com --quiet"
 
 title_no_wait "Delete anthos-baremetal-register GSA"

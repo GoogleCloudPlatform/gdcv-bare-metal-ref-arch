@@ -17,7 +17,13 @@
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
 title_no_wait "Verify ACM status"
-print_and_execute "gcloud alpha container hub config-management status --project=${PLATFORM_PROJECT_ID}"
+print_and_execute "gcloud beta container hub config-management status --project=${PLATFORM_PROJECT_ID}"
+
+echo
+bold_no_wait "======================================================================================================================="
+bold_no_wait "Config Management Status: https://console.cloud.google.com/anthos/config_management?project=${PLATFORM_PROJECT_ID}"
+bold_no_wait "======================================================================================================================="
+echo
 
 check_local_error
 total_runtime

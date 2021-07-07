@@ -259,11 +259,15 @@ To delete all of the resources, the instances and projects can just be deleted. 
 1. Connect to the administrative host
 1. **[Admin Host]** Unregister the clusters
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/995_unregister_cluster.sh
+   ${ABM_WORK_DIR}/scripts/gcp/994_unregister_cluster.sh
    ```
 1. **[Admin Host]** Delete the cluster instances
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/996_delete_cluster_instances.sh
+   ${ABM_WORK_DIR}/scripts/gcp/995_delete_cluster_instances.sh
+   ```
+1. **[Admin Host]** Delete the VXLAN network configurations
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/996_delete_vxlan_network.sh
    ```
 1. **[Admin Host]** Delete the cluster configurations
    ```
@@ -280,6 +284,10 @@ To delete all of the resources, the instances and projects can just be deleted. 
 1. **[Cloud Shell]** Delete the administrative host
    ```
    ${ABM_WORK_DIR}/scripts/gcp/999_delete_admin_instance.sh
+   ```
+1. **[Cloud Shell]** Delete the ACM Cloud Source Repository
+   ```
+   ${ABM_WORK_DIR}/scripts/998_delete_acm_csr.sh
    ```
 1. **[Cloud Shell]** Delete the GCP projects
    ```

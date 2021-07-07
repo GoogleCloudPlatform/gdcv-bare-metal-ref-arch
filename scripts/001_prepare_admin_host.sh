@@ -72,7 +72,7 @@ print_and_execute "/usr/local/share/google-cloud-sdk/bin/kubectl krew install ct
 title_no_wait "Install ns plugin"
 print_and_execute "/usr/local/share/google-cloud-sdk/bin/kubectl krew install ns"
 
-title_no_wait "Install istioctl v${ASM_VERSION}"
+title_no_wait "Install ASM v${ASM_VERSION}"
 print_and_execute "curl --output ${TEMP_DIR}/istio-${ASM_VERSION}-linux-amd64.tar https://storage.googleapis.com/gke-release/asm/istio-${ASM_VERSION}-linux-amd64.tar.gz"
 print_and_execute "sudo tar xf ${TEMP_DIR}/istio-${ASM_VERSION}-linux-amd64.tar -C /usr/local/share/"
 print_and_execute "sudo chmod o+rx /usr/local/share/istio-${ASM_VERSION} /usr/local/share/istio-${ASM_VERSION}/bin"
@@ -95,6 +95,11 @@ print_and_execute "sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 #sudo sh get-docker.sh
 
 print_and_execute "sudo usermod -aG docker $USER"
+
+title_no_wait "Install kind v${KIND_VERSION}"
+print_and_execute "mkdir -p ~/bin"
+print_and_execute "curl --output ~/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-amd64"
+print_and_execute "chmod u+x ~/bin/kind"
 
 title_no_wait "Check ${DEPLOYMENT_USER} user's SSH key"
 if sudo [ ! -f "${DEPLOYMENT_USER_SSH_KEY}" ]; then

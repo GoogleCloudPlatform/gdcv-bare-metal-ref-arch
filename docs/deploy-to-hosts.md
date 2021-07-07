@@ -177,7 +177,11 @@ See the [Deploy the application](deploy-the-application.md) guide.
 1. Connect to the administrative host
 1. **[Admin Host]** Reset the cluster hosts to the state prior to installation
    ```
-   ${ABM_WORK_DIR}/scripts/998_reset_clusters.sh
+   ${ABM_WORK_DIR}/scripts/997_reset_clusters.sh
+   ```
+1. **[Cloud Shell]** Delete the ACM Cloud Source Repository
+   ```
+   ${ABM_WORK_DIR}/scripts/998_delete_acm_csr.sh
    ```
 1. **[Admin Host]** Delete the GCP projects
    ```

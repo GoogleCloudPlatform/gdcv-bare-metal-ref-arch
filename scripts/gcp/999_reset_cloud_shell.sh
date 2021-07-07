@@ -1,4 +1,6 @@
-# Copyright 2021 Google LLC
+#!/usr/bin/env bash
+
+# Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-export ADMIN_WORKSTATION_MACHINE_TYPE=n2-standard-8
-export ADMIN_WORKSTATION_REGION=us-central1
-export ADMIN_WORKSTATION_ZONE=us-central1-a
+LOG_FILE_PREFIX=gcp-
+source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
-export CP_MACHINE_TYPE=n1-standard-8
+title_no_wait "Reset CloudShell"
 
-export WORKER_MACHINE_TYPE=n1-standard-8
+rm -rf ${ABM_WORK_DIR}/logs
+rm -rf ${ABM_WORK_DIR}/tmp
+
+sed -e "s|^source ${ABM_WORK_DIR}/scripts/vars.sh$||g" ~/.profile
+rm -f ${ABM_WORK_DIR}/scripts/var.sh
+
+rm -f ~.ssh/google_compute_known_hosts
+
+check_local_error
+total_runtime
+exit ${local_error}

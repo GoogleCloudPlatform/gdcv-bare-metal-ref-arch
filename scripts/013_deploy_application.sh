@@ -27,6 +27,12 @@ for cluster_name in $(get_cluster_names); do
     echo
 done
 
+for cluster_name in $(get_cluster_names); do 
+    title_no_wait "Wait for deployments to be available on ${cluster_name}"
+    print_and_execute "kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} wait --for=condition=available --timeout=600s deployments --all"
+    echo
+done
+
 check_local_error
 total_runtime
 exit ${local_error}
