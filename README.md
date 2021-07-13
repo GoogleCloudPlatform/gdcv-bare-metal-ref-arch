@@ -1,5 +1,7 @@
 # Anthos Reference Architecture - Anthos on bare metal
 
+This repository includes the scripts and documentation to deploy the architecture described in [Anthos reference architecture: Anthos on bare metal](https://cloud.google.com/architecture/ara-anthos-on-bare-metal).
+
 ## IP address allocation
 
 The default IP address allocations are as follows. If these allocations need to be modify they can be changed in the [conf files](conf/) or cluster configuration files specified in the [Review the cluster configuration files](docs/deploy-to-hosts.md#review-the-cluster-configuration-files) section.
