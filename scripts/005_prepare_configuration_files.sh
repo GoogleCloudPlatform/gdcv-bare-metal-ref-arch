@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ for cluster_name in $(get_cluster_names); do
     export WORKER_NODE_POOL=${worker_node_pool_addresses}
 
     bold_no_wait "${cluster_name}"
-    cluster_yaml=bmctl-workspace/${cluster_name}/${cluster_name}.yaml
+    cluster_yaml=${BMCTL_WORKSPACE_DIR}/${cluster_name}/${cluster_name}.yaml
     if [ ! -f "${cluster_yaml}" ]; then
         print_and_execute "bmctl create config --cluster ${cluster_name} --create-service-accounts --enable-apis --project-id ${PLATFORM_PROJECT_ID}"
         if [ $? -eq 0 ]; then
@@ -57,18 +57,18 @@ for cluster_name in $(get_cluster_names); do
             sed -i '0,/^---$/d' ${cluster_yaml}
 
             KUSTOMIZATIONS_TYPE="hybrid"
-            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATIONS_TYPE}/kustomization.yaml > ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/kustomization.yaml
-            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATIONS_TYPE}/patch.yaml | sed 's/\\n/\n/g' > ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/patch.yaml
+            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATIONS_TYPE}/kustomization.yaml > ${BMCTL_WORKSPACE_DIR}/${cluster_name}/kustomization.yaml
+            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATIONS_TYPE}/patch.yaml | sed 's/\\n/\n/g' > ${BMCTL_WORKSPACE_DIR}/${cluster_name}/patch.yaml
 
             kubectl kustomize bmctl-workspace/${cluster_name} > ${cluster_yaml}.tmp
             mv ${cluster_yaml}.tmp ${cluster_yaml}
             
-            cat ${ABM_WORK_DIR}/kustomizations/bmctl-config.yaml | envsubst > ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/bmctl-config.yaml
+            cat ${ABM_WORK_DIR}/kustomizations/bmctl-config.yaml | envsubst > ${BMCTL_WORKSPACE_DIR}/${cluster_name}/bmctl-config.yaml
             cat ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/bmctl-config.yaml ${cluster_yaml} > ${cluster_yaml}.tmp
             mv ${cluster_yaml}.tmp ${cluster_yaml}
 
             bold_no_wait "Checking configuration"
-            print_and_execute "bmctl check config --cluster ${cluster_name}"
+            print_and_execute "bmctl --workspace-dir ${BMCTL_WORKSPACE_DIR} check config --cluster ${cluster_name}"
             echo
         else
             error_no_wait "There was an error generating the configuration for cluster '${cluster_name}'"

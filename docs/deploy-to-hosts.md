@@ -108,10 +108,10 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 
 1. Connect to the administrative host
 1. Review the cluster configuration files at the following locations:
-   - **metal-1-apps-dc1a-prod**: `${ABM_WORK_DIR}/bmctl-workspace/metal-1-apps-dc1a-prod/metal-1-apps-dc1a-prod.yaml`
-   - **metal-2-apps-dc1b-prod**: `${ABM_WORK_DIR}/bmctl-workspace/metal-2-apps-dc1b-prod/metal-2-apps-dc1b-prod.yaml`
-   - **metal-3-apps-dc2a-prod**: `${ABM_WORK_DIR}/bmctl-workspace/metal-3-apps-dc2a-prod/metal-3-apps-dc2a-prod.yaml`
-   - **metal-4-apps-dc2b-prod**: `${ABM_WORK_DIR}/bmctl-workspace/metal-4-apps-dc2b-prod/metal-4-apps-dc2b-prod.yaml`
+   - **metal-1-apps-dc1a-prod**: `${BMCTL_WORKSPACE_DIR}/metal-1-apps-dc1a-prod/metal-1-apps-dc1a-prod.yaml`
+   - **metal-2-apps-dc1b-prod**: `${BMCTL_WORKSPACE_DIR}/metal-2-apps-dc1b-prod/metal-2-apps-dc1b-prod.yaml`
+   - **metal-3-apps-dc2a-prod**: `${BMCTL_WORKSPACE_DIR}/metal-3-apps-dc2a-prod/metal-3-apps-dc2a-prod.yaml`
+   - **metal-4-apps-dc2b-prod**: `${BMCTL_WORKSPACE_DIR}/metal-4-apps-dc2b-prod/metal-4-apps-dc2b-prod.yaml`
 1. Make any changes, such as IP addresses, to the configuration files before proceeding.
 
 ## Create the clusters

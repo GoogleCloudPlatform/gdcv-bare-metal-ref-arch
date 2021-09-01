@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
-export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
+export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do
     
     title_no_wait "Applying ASM istio-manifests on ${cluster_name}"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,10 +17,8 @@
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
 title_no_wait "Reset clusters"
-print_and_execute "cd ${ABM_WORK_DIR}"
 for cluster_name in $(get_cluster_names); do
-    
-    print_and_execute "bmctl reset -c ${cluster_name}"
+    print_and_execute "bmctl --workspace-dir ${ABM_WORKSPACE_DIR} reset -c ${cluster_name}"
 done
 
 check_local_error

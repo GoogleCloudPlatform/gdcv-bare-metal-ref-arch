@@ -11,4 +11,5 @@
 /tmp/
 
 /scripts/host.sh
-/scripts/vars.sh
+/scripts/vars*.sh
+

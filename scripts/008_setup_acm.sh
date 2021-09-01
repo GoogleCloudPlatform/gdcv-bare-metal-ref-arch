@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ print_and_execute "gcloud services enable --project ${PLATFORM_PROJECT_ID} antho
 print_and_execute "gcloud beta container hub config-management enable --project=${PLATFORM_PROJECT_ID}"
 
 print_and_execute "cd ${ABM_WORK_DIR}"
-export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
+export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do    
     title_no_wait "Deploy ACM on ${cluster_name}"
     
@@ -102,7 +102,7 @@ done
 bold_no_wait "Wait for configuration updates to be applied"
 sleep 60
 
-export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
+export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do
     title_no_wait "Wating for ACM to deploy in ${cluster_name}"
     print_and_execute "kubectl --context=${cluster_name} --namespace=config-management-system wait --for=condition=available --timeout=600s deployments --all"
