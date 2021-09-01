@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ LOG_FILE_PREFIX=gcp-
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
 title_no_wait "Delete cluster configurations"
-print_and_execute "rm -rf ${ABM_WORK_DIR}/bmctl-workspace"
+print_and_execute "rm -rf ${BMCTL_WORKSPACE_DIR}"
 
 check_local_error
 total_runtime

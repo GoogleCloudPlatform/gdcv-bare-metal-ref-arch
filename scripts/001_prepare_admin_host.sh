@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -71,14 +71,6 @@ print_and_execute "/usr/local/share/google-cloud-sdk/bin/kubectl krew install ct
 
 title_no_wait "Install ns plugin"
 print_and_execute "/usr/local/share/google-cloud-sdk/bin/kubectl krew install ns"
-
-title_no_wait "Install ASM v${ASM_VERSION} binaries"
-print_and_execute "curl --output ${TEMP_DIR}/istio-${ASM_VERSION}-linux-amd64.tar https://storage.googleapis.com/gke-release/asm/istio-${ASM_VERSION}-linux-amd64.tar.gz"
-print_and_execute "sudo tar xf ${TEMP_DIR}/istio-${ASM_VERSION}-linux-amd64.tar -C /usr/local/share/"
-print_and_execute "sudo chmod o+rx /usr/local/share/istio-${ASM_VERSION} /usr/local/share/istio-${ASM_VERSION}/bin"
-
-grep -q "/usr/local/share/istio-${ASM_VERSION}" ~/.bashrc || echo -e "export PATH=\${PATH}:/usr/local/share/istio-${ASM_VERSION}/bin" >> ~/.bashrc
-sudo ln -s -f /usr/local/share/istio-${ASM_VERSION}/tools/istioctl.bash /etc/bash_completion.d/istioctl
 
 title_no_wait "Install Docker"
 sudo apt-get update

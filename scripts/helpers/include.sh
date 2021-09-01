@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,17 +39,17 @@ exec &> >(tee -i ${LOG_FILE})
 
 VALID_CHARACTERS="[:alnum:]_/\.\-"
 
-grep -q "export ABM_ADDITIONAL_CONF=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ABM_ADDITIONAL_CONF=${ABM_ADDITIONAL_CONF:-}" >> ${ENVIRONMENT_FILE}
+grep -q "export ABM_ADDITIONAL_CONF=" ${ENVIRONMENT_FILE} || echo -e "export ABM_ADDITIONAL_CONF=${ABM_ADDITIONAL_CONF:-}" >> ${ENVIRONMENT_FILE}
 grep -q "export ABM_WORK_DIR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ABM_WORK_DIR=${ABM_WORK_DIR}" >> ${ENVIRONMENT_FILE}
 grep -q "export APP_NAMESPACE=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export APP_NAMESPACE=${APP_NAMESPACE:-bofa}" >> ${ENVIRONMENT_FILE}
 grep -q "export APP_PROJECT_ID=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export APP_PROJECT_ID=${APP_PROJECT_ID:-project-2-bofa-prod}" >> ${ENVIRONMENT_FILE}
 grep -q "export ASM_RELEASE=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_RELEASE=${ASM_RELEASE:-1.10}" >> ${ENVIRONMENT_FILE}
-grep -q "export ASM_REVISION=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_REVISION=${ASM_REVISION:-asm-1102-3}" >> ${ENVIRONMENT_FILE}
-grep -q "export ASM_VERSION=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_VERSION=${ASM_VERSION:-1.10.2-asm.3}" >> ${ENVIRONMENT_FILE}
+grep -q "export ASM_REVISION=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_REVISION=${ASM_REVISION:-asm-1104-6}" >> ${ENVIRONMENT_FILE}
+grep -q "export ASM_VERSION=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_VERSION=${ASM_VERSION:-1.10.4-asm.6}" >> ${ENVIRONMENT_FILE}
 grep -q "export BILLING_ACCOUNT_ID=" ${ENVIRONMENT_FILE} || echo -e "export BILLING_ACCOUNT_ID=${BILLING_ACCOUNT_ID}" >> ${ENVIRONMENT_FILE}
-grep -q "export BMCTL_VERSION=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export BMCTL_VERSION=${BMCTL_VERSION:-1.8.1}" >> ${ENVIRONMENT_FILE}
+grep -q "export BMCTL_VERSION=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export BMCTL_VERSION=${BMCTL_VERSION:-1.8.3}" >> ${ENVIRONMENT_FILE}
 grep -q "export CLOUD_OPS_REGION=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export CLOUD_OPS_REGION=${CLOUD_OPS_REGION:-global}" >> ${ENVIRONMENT_FILE}
-grep -q "export CLOUD_SDK_VERSION=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export CLOUD_SDK_VERSION=${CLOUD_SDK_VERSION:-347.0.0}" >> ${ENVIRONMENT_FILE}
+grep -q "export CLOUD_SDK_VERSION=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export CLOUD_SDK_VERSION=${CLOUD_SDK_VERSION:-354.0.0}" >> ${ENVIRONMENT_FILE}
 grep -q "export DEPLOYMENT_USER=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || (echo -e "export DEPLOYMENT_USER=${DEPLOYMENT_USER:-anthos}" >> ${ENVIRONMENT_FILE} && source ${ENVIRONMENT_FILE})
 grep -q "export FOLDER_ID=" ${ENVIRONMENT_FILE} || echo -e "export FOLDER_ID=${FOLDER_ID:-}" >> ${ENVIRONMENT_FILE}
 grep -q "export KIND_VERSION=" ${ENVIRONMENT_FILE} || echo -e "export KIND_VERSION=${KIND_VERSION:-0.11.1}" >> ${ENVIRONMENT_FILE}
@@ -63,6 +63,7 @@ source ${ENVIRONMENT_FILE}
 
 # Variable with dependencies above
 grep -q "export ABM_CONF_DIR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ABM_CONF_DIR=${ABM_CONF_DIR:-${ABM_WORK_DIR}/conf}" >> ${ENVIRONMENT_FILE}
+grep -q "export BMCTL_WORKSPACE_DIR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export BMCTL_WORKSPACE_DIR=${BMCTL_WORKSPACE_DIR:-${ABM_WORK_DIR}/bmctl-workspace}" >> ${ENVIRONMENT_FILE}
 
 DEPLOYMENT_USER_HOME=`eval echo "~${DEPLOYMENT_USER}"`
 if [[ ! ${DEPLOYMENT_USER_HOME} = ~* ]] || [ ! -z ${DEPLOYMENT_USER_SSH_KEY} ]; then

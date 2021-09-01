@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,12 +16,27 @@
 
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
-ASM_DIR=/usr/local/share/istio-${ASM_VERSION}
-
 TEMP_DIR=${ABM_WORK_DIR}/tmp
-mkdir -p ${TEMP_DIR}
+ASM_TEMP_DIR=${TEMP_DIR}/asm-${ASM_VERSION}
+mkdir -p ${ASM_TEMP_DIR}
 
-ASM_TEMP_DIR=${TEMP_DIR}/asm-${ASM_RELEASE}
+if [ ! -f "${ASM_TEMP_DIR}/istio-${ASM_VERSION}-linux-amd64.tar.gz" ]; then
+    title_no_wait "Download the Anthos Service Mesh v${ASM_VERSION} installation file"
+    print_and_execute "curl --location --output ${ASM_TEMP_DIR}/istio-${ASM_VERSION}-linux-amd64.tar.gz --show-error --silent https://storage.googleapis.com/gke-release/asm/istio-${ASM_VERSION}-linux-amd64.tar.gz"
+    print_and_execute "tar xzf ${ASM_TEMP_DIR}/istio-${ASM_VERSION}-linux-amd64.tar.gz --directory ${ASM_TEMP_DIR}"
+fi
+ASM_INSTALL_DIR=${ASM_TEMP_DIR}/istio-${ASM_VERSION}
+
+KPT_BINARY=${ASM_TEMP_DIR}/kpt
+KPT_VERSION=0.39.2
+title_no_wait "Download kpt v${KPT_VERSION}"
+print_and_execute "curl --location --output ${KPT_BINARY} --show-error --silent https://github.com/GoogleContainerTools/kpt/releases/download/v${KPT_VERSION}/kpt_linux_amd64"
+print_and_execute "chmod +x ${KPT_BINARY}"
+
+ASM_KPT_DIR=${ASM_TEMP_DIR}/asm-${ASM_RELEASE}
+rm -rf ${ASM_KPT_DIR}
+title_no_wait "Download the ASM ${ASM_RELEASE} kpt package"
+print_and_execute "${KPT_BINARY} pkg get https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-${ASM_RELEASE}-asm ${ASM_KPT_DIR}"
 
 title_no_wait "Enable APIs"
 print_and_execute "gcloud services enable --project ${PLATFORM_PROJECT_ID} \
@@ -42,13 +57,8 @@ monitoring.googleapis.com \
 stackdriver.googleapis.com \
 sts.googleapis.com"
 
-rm -rf ${ASM_TEMP_DIR}
-title_no_wait "Download the ASM ${ASM_RELEASE} kpt package"
-print_and_execute "kpt pkg get https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages.git/asm@release-${ASM_RELEASE}-asm ${ASM_TEMP_DIR}"
-cd ${TEMP_DIR}
-
 title_no_wait "Create the istiod-service.yaml file"
-cat <<EOF > ${TEMP_DIR}/istiod-service.yaml
+cat <<EOF > ${ASM_TEMP_DIR}/istiod-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -79,7 +89,7 @@ spec:
     istio.io/rev: ${ASM_REVISION}
 EOF
 
-export KUBECONFIG=$(ls -1 ${ABM_WORK_DIR}/bmctl-workspace/*/*-kubeconfig | tr '\n' ':')
+export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do
     load_cluster_config ${cluster_name}
 
@@ -103,21 +113,22 @@ for cluster_name in $(get_cluster_names); do
 
     HUB_IDP_URL="$(kubectl --context=${cluster_name} get memberships.hub.gke.io membership -o=jsonpath='{.spec.identity_provider}')"
 
-    kpt cfg set ${ASM_TEMP_DIR} gcloud.core.project ${FLEET_PROJECT_ID}
-    kpt cfg set ${ASM_TEMP_DIR} gcloud.container.cluster ${CLUSTER_NAME}
-    kpt cfg set ${ASM_TEMP_DIR} gcloud.compute.location ${CLUSTER_LOCATION}
-    kpt cfg set ${ASM_TEMP_DIR} anthos.servicemesh.hub gcr.io/gke-release/asm
-    kpt cfg set ${ASM_TEMP_DIR} anthos.servicemesh.rev ${ASM_REVISION}
-    kpt cfg set ${ASM_TEMP_DIR} anthos.servicemesh.tag ${ASM_VERSION}
-    kpt cfg set ${ASM_TEMP_DIR} gcloud.project.environProjectNumber ${FLEET_PROJECT_NUMBER}
-    kpt cfg set ${ASM_TEMP_DIR} anthos.servicemesh.hubTrustDomain ${FLEET_PROJECT_ID}.svc.id.goog
-    kpt cfg set ${ASM_TEMP_DIR} anthos.servicemesh.hub-idp-url "${HUB_IDP_URL}"
+    cd ${ASM_TEMP_DIR}
+    ${KPT_BINARY} cfg set ${ASM_KPT_DIR} gcloud.core.project ${FLEET_PROJECT_ID}
+    ${KPT_BINARY} cfg set ${ASM_KPT_DIR} gcloud.container.cluster ${CLUSTER_NAME}
+    ${KPT_BINARY} cfg set ${ASM_KPT_DIR} gcloud.compute.location ${CLUSTER_LOCATION}
+    ${KPT_BINARY} cfg set ${ASM_KPT_DIR} anthos.servicemesh.hub gcr.io/gke-release/asm
+    ${KPT_BINARY} cfg set ${ASM_KPT_DIR} anthos.servicemesh.rev ${ASM_REVISION}
+    ${KPT_BINARY} cfg set ${ASM_KPT_DIR} anthos.servicemesh.tag ${ASM_VERSION}
+    ${KPT_BINARY} cfg set ${ASM_KPT_DIR} gcloud.project.environProjectNumber ${FLEET_PROJECT_NUMBER}
+    ${KPT_BINARY} cfg set ${ASM_KPT_DIR} anthos.servicemesh.hubTrustDomain ${FLEET_PROJECT_ID}.svc.id.goog
+    ${KPT_BINARY} cfg set ${ASM_KPT_DIR} anthos.servicemesh.hub-idp-url "${HUB_IDP_URL}"  
 
     title_no_wait "Install Anthos Service Mesh"    
-    print_and_execute "istioctl install --context=${cluster_name} -f ${ASM_TEMP_DIR}/istio/istio-operator.yaml -f ${ASM_TEMP_DIR}/istio/options/hub-meshca.yaml --revision=${ASM_REVISION} --skip-confirmation"
+    print_and_execute "${ASM_INSTALL_DIR}/bin/istioctl install --context=${cluster_name} -f ${ASM_KPT_DIR}/istio/istio-operator.yaml -f ${ASM_KPT_DIR}/istio/options/hub-meshca.yaml --revision=${ASM_REVISION} --skip-confirmation"
 
     title_no_wait "Configuring the validating webhook"
-    print_and_execute "kubectl --context=${cluster_name} apply -f ${TEMP_DIR}/istiod-service.yaml"
+    print_and_execute "kubectl --context=${cluster_name} apply -f ${ASM_TEMP_DIR}/istiod-service.yaml"
 done
 
 check_local_error

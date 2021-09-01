@@ -46,6 +46,8 @@ ${CONTROL_PLANE_NODE_POOL}
       ingressVIP: ${INGRESS_LB_VIP}
   nodeAccess:
     loginUser: ${DEPLOYMENT_USER}
+  nodeConfig:
+    containerRuntime: containerd
   type: hybrid
 ---
 apiVersion: baremetal.cluster.gke.io/v1
