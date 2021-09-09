@@ -160,20 +160,12 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ${ABM_WORK_DIR}/scripts/gcp/006_validate_vxlan_network.sh
    ```
 
-## Create a Cloud Monitoring workspace
-
-1. Connect to the administrative host
-1. **[Admin Host]** Create a Cloud Monitoring workspace
-   ```
-   ${ABM_WORK_DIR}/scripts/004_create_cloud_monitoring_workspace.sh
-   ```
-
 ## Prepare the cluster configuration files
 
 1. Connect to the administrative host
 1. **[Admin Host]** Prepare the cluster configuration files
    ```
-   ${ABM_WORK_DIR}/scripts/005_prepare_configuration_files.sh
+   ${ABM_WORK_DIR}/scripts/004_prepare_configuration_files.sh
    ```
 
 ## Create the clusters
@@ -181,7 +173,7 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 1. Connect to the administrative host
 1. **[Admin Host]** Create the clusters
    ```
-   ${ABM_WORK_DIR}/scripts/006_create_clusters.sh
+   ${ABM_WORK_DIR}/scripts/005_create_clusters.sh
    ```
 
 ## Login to the cluster with the Cloud Console
@@ -189,14 +181,14 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 1. Connect to the administrative host
 1. **[Admin Host]** Generate the cluster login tokens
    ```
-   ${ABM_WORK_DIR}/scripts/007_generate_login_tokens.sh
+   ${ABM_WORK_DIR}/scripts/006_generate_login_tokens.sh
    ```
 1. Open the URL provided by the script
 1. For each cluster:
    1. Click on the cluster name
    1. Click Login
    1. Choose Token as the method for authentication
-   1. Paste the token from the `007_generate_login_tokens.sh` script for the associated cluster
+   1. Paste the token from the `006_generate_login_tokens.sh` script for the associated cluster
    1. Click Login
 1. Verify that all clusters show healthy
 
@@ -205,11 +197,11 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 1. Connect to the administrative host
 1. **[Admin Host]** Setup ACM
    ```
-   ${ABM_WORK_DIR}/scripts/008_setup_acm.sh
+   ${ABM_WORK_DIR}/scripts/007_setup_acm.sh
    ```
 1. **[Admin Host]** Verify ACM
    ```
-   ${ABM_WORK_DIR}/scripts/009_verify_acm.sh
+   ${ABM_WORK_DIR}/scripts/008_verify_acm.sh
    ```
    **Verify the following**:
    - `Status` for each cluster shows `SYNCED` before proceeding.
@@ -220,11 +212,11 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 1. Connect to the administrative host
 1. **[Admin Host]** Setup ASM
    ```
-   ${ABM_WORK_DIR}/scripts/010_setup_asm.sh
+   ${ABM_WORK_DIR}/scripts/009_setup_asm.sh
    ```
 1. **[Admin Host]** Verify ASM
    ```
-   ${ABM_WORK_DIR}/scripts/011_verify_asm.sh
+   ${ABM_WORK_DIR}/scripts/010_verify_asm.sh
    ```
    **Verify the following**:
    - Deployments and Pods are READY.

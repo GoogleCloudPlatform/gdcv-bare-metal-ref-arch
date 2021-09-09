@@ -17,6 +17,7 @@
 LOG_FILE_PREFIX=gcp-
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
+title_no_wait "Unregister clusters"
 for cluster_name in $(get_cluster_names); do   
     print_and_execute "gcloud container hub memberships delete --quiet ${cluster_name}"
 done

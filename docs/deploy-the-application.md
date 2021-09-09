@@ -7,7 +7,7 @@ The Bank of Anthos source code can be found at https://github.com/GoogleCloudPla
 1. Connect to the administrative host
 1. **[Admin Host]** Clone the application repository
    ```
-   ${ABM_WORK_DIR}/scripts/012_clone_application_repository.sh
+   ${ABM_WORK_DIR}/scripts/011_clone_application_repository.sh
    ```
 
 ## Deploy the application
@@ -15,11 +15,11 @@ The Bank of Anthos source code can be found at https://github.com/GoogleCloudPla
 1. Connect to the administrative host
 1. **[Admin Host]** Deploy the application
    ```
-   ${ABM_WORK_DIR}/scripts/013_deploy_application.sh
+   ${ABM_WORK_DIR}/scripts/012_deploy_application.sh
    ```
 1. **[Admin Host]** Verify the application
    ```
-   ${ABM_WORK_DIR}/scripts/014_verify_application.sh
+   ${ABM_WORK_DIR}/scripts/013_verify_application.sh
    ```
 
 ## Configure the application to use ASM
@@ -27,9 +27,9 @@ The Bank of Anthos source code can be found at https://github.com/GoogleCloudPla
 1. Connect to the administrative host
 1. **[Admin Host]** Configure the application
    ```
-   ${ABM_WORK_DIR}/scripts/015_configure_application_asm.sh
+   ${ABM_WORK_DIR}/scripts/014_configure_application_asm.sh
    ```
 1. **[Admin Host]** Verify the configuration
    ```
-   ${ABM_WORK_DIR}/scripts/016_verify_application_asm.sh
+   ${ABM_WORK_DIR}/scripts/015_verify_application_asm.sh
    ```

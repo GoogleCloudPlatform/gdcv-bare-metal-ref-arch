@@ -18,7 +18,7 @@ source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
 title_no_wait "Reset clusters"
 for cluster_name in $(get_cluster_names); do
-    print_and_execute "bmctl --workspace-dir ${ABM_WORKSPACE_DIR} reset -c ${cluster_name}"
+    print_and_execute "bmctl --workspace-dir ${BMCTL_WORKSPACE_DIR} reset -c ${cluster_name}"
 done
 
 check_local_error
