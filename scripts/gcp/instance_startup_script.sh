@@ -27,14 +27,14 @@ systemctl disable apparmor.service
 
 # Add anthos group and user
 addgroup \
---gid 1003 \
+--gid 2000 \
 anthos
 
 adduser \
 --disabled-password \
 --gecos "Anthos user" \
---gid 1003 \
---uid 1002 \
+--gid 2000 \
+--uid 2000 \
 anthos
 
 # Configure anthos user for passwordless sudo
