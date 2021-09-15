@@ -235,7 +235,7 @@ To delete all of the resources, the instances and projects can just be deleted. 
 1. Open Cloud Shell
 1. **[Cloud Shell]** Delete the cluster instances
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/996_delete_cluster_instances.sh
+   ${ABM_WORK_DIR}/scripts/gcp/995_delete_cluster_instances.sh
    ```
 1. **[Cloud Shell]** Delete the administrative host
    ```
