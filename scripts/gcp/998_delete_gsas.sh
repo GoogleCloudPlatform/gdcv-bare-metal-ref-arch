@@ -29,6 +29,9 @@ print_and_execute "gcloud iam service-accounts delete anthos-baremetal-gcr@${PLA
 title_no_wait "Delete anthos-baremetal-register GSA"
 print_and_execute "gcloud iam service-accounts delete anthos-baremetal-register@${PLATFORM_PROJECT_ID}.iam.gserviceaccount.com --quiet"
 
+title_no_wait "Delete GSA files"
+print_and_execute "rm -rf ${BMCTL_WORKSPACE_DIR}/.sa-keys ${BMCTL_WORKSPACE_DIR}/config.json ${BMCTL_WORKSPACE_DIR}/config.toml"
+
 check_local_error
 total_runtime
 exit ${local_error}

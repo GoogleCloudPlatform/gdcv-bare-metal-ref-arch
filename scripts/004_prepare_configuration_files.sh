@@ -56,9 +56,8 @@ for cluster_name in $(get_cluster_names); do
             cp -p ${cluster_yaml} ${cluster_yaml}.orig
             sed -i '0,/^---$/d' ${cluster_yaml}
 
-            KUSTOMIZATIONS_TYPE="hybrid"
-            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATIONS_TYPE}/kustomization.yaml > ${BMCTL_WORKSPACE_DIR}/${cluster_name}/kustomization.yaml
-            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATIONS_TYPE}/patch.yaml | sed 's/\\n/\n/g' > ${BMCTL_WORKSPACE_DIR}/${cluster_name}/patch.yaml
+            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATION_TYPE}/kustomization.yaml > ${BMCTL_WORKSPACE_DIR}/${cluster_name}/kustomization.yaml
+            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATION_TYPE}/patch.yaml | sed 's/\\n/\n/g' > ${BMCTL_WORKSPACE_DIR}/${cluster_name}/patch.yaml
 
             kubectl kustomize bmctl-workspace/${cluster_name} > ${cluster_yaml}.tmp
             mv ${cluster_yaml}.tmp ${cluster_yaml}

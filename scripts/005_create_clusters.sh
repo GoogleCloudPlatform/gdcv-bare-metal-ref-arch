@@ -24,6 +24,12 @@ for cluster_name in $(get_cluster_names); do
     print_and_execute "bmctl --workspace-dir ${BMCTL_WORKSPACE_DIR} create cluster -c ${cluster_name}"
 done
 
+title_no_wait "Setup kubectl ctx"
+export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
+for cluster_name in $(get_cluster_names); do
+    print_and_execute "kubectl ctx ${cluster_name}=${cluster_name}-admin@${cluster_name}"
+done
+
 check_local_error
 total_runtime
 exit ${local_error}

@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,14 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOG_FILE_PREFIX=gcp-
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
-
-for cluster_name in $(get_cluster_names); do
-    title_no_wait "Delete cluster configuration for '${cluster_name}'"
-    print_and_execute "rm -rf ${BMCTL_WORKSPACE_DIR}/${cluster_name}"
-done
-
-check_local_error
-total_runtime
-exit ${local_error}
+export REGION=us-west1
+export ZONE=us-west1-b

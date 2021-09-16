@@ -14,12 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOG_FILE_PREFIX=gcp-
+LOG_FILE_PREFIX=gcp-lb-
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
 for cluster_name in $(get_cluster_names); do
-    title_no_wait "Delete cluster configuration for '${cluster_name}'"
-    print_and_execute "rm -rf ${BMCTL_WORKSPACE_DIR}/${cluster_name}"
+    address_name=${cluster_name}-ingress-address
+    bold_no_wait "Creating ingress load balancer address '${address_name}' for '${cluster_name}'"
+    print_and_execute "gcloud compute addresses create ${address_name} --global"
 done
 
 check_local_error

@@ -20,7 +20,11 @@ export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do 
     title_no_wait "Verify application on ${cluster_name}"
     print_and_execute "kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} get pods"
-    print_and_execute "SERVICE_EXTERNAL_IP=$(kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} get service/frontend --output jsonpath='{.status.loadBalancer.ingress[0].ip}')"
+
+    print_and_execute "SERVICE_EXTERNAL_IP=$(kubectl --context=${cluster_name} --namespace=gke-system get service/istio-ingress --output jsonpath='{.status.loadBalancer.ingress[0].ip}')"
+    if [ -z ${SERVICE_EXTERNAL_IP} ]; then
+        print_and_execute "SERVICE_EXTERNAL_IP=$(kubectl --context=${cluster_name} --namespace=gke-system get service/istio-ingress --output jsonpath='{.spec.loadBalancerIP}')"
+    fi
     print_and_execute "curl --fail --output /dev/null --show-error --silent http://${SERVICE_EXTERNAL_IP}/"
     echo
 done
