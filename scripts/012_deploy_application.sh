@@ -24,6 +24,40 @@ for cluster_name in $(get_cluster_names); do
     print_and_execute "kubectl --context=${cluster_name} label namespace ${APP_NAMESPACE} istio.io/rev=${ASM_REVISION} --overwrite"
     print_and_execute "kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} apply -f ${ABM_WORK_DIR}/bank-of-anthos/extras/jwt/jwt-secret.yaml"
     print_and_execute "kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} apply -f ${ABM_WORK_DIR}/bank-of-anthos/kubernetes-manifests"
+
+    bold_no_wait "Update application for ingress"
+    yaml_file=/tmp/frontend-ingress.yaml
+    cat <<EOF > ${yaml_file}
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: frontend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+EOF
+    kubectl --context=${cluster_name} --namespace ${APP_NAMESPACE} apply -f ${yaml_file} && rm -f ${yaml_file}
     echo
 done
 

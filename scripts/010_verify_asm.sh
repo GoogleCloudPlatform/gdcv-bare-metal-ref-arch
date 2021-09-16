@@ -22,7 +22,7 @@ for cluster_name in $(get_cluster_names); do
     title_no_wait "Verify ASM status on ${cluster_name}"
     print_and_execute "kubectl --context=${cluster_name} --namespace=istio-system get deployments"
     print_and_execute "kubectl --context=${cluster_name} --namespace=istio-system get pods"
-    print_and_execute "kubectl --context=${cluster_name} --namespace=istio-system get service/istio-ingressgateway"
+    print_and_execute "kubectl --context=${cluster_name} --namespace=${ASM_GATEWAY_NAMESPACE} get service/istio-ingressgateway"
 done
 
 check_local_error
