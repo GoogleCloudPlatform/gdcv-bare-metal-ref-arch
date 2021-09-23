@@ -20,9 +20,9 @@ The default IP address allocations are as follows. If these allocations need to 
 10.185.1.11    metal-1-apps-dc1a-prod-cp-1
 10.185.1.12    metal-1-apps-dc1a-prod-cp-2
 10.185.1.13    metal-1-apps-dc1a-prod-cp-3
-10.185.1.21    metal-1-apps-dc1a-prod-worker-1
-10.185.1.22    metal-1-apps-dc1a-prod-worker-2
-10.185.1.23    metal-1-apps-dc1a-prod-worker-3
+10.185.1.18    metal-1-apps-dc1a-prod-worker-1
+10.185.1.19    metal-1-apps-dc1a-prod-worker-2
+10.185.1.20    metal-1-apps-dc1a-prod-worker-3
 
 # VIPs
 10.185.1.2     metal-1-apps-dc1a-prod-cp
@@ -36,9 +36,9 @@ The default IP address allocations are as follows. If these allocations need to 
 10.185.2.11    metal-2-apps-dc1b-prod-cp-1
 10.185.2.12    metal-2-apps-dc1b-prod-cp-2
 10.185.2.13    metal-2-apps-dc1b-prod-cp-3
-10.185.2.21    metal-2-apps-dc1b-prod-worker-1
-10.185.2.22    metal-2-apps-dc1b-prod-worker-2
-10.185.2.23    metal-2-apps-dc1b-prod-worker-3
+10.185.2.18    metal-2-apps-dc1b-prod-worker-1
+10.185.2.19    metal-2-apps-dc1b-prod-worker-2
+10.185.2.20    metal-2-apps-dc1b-prod-worker-3
 
 # VIPs
 10.185.2.2     metal-2-apps-dc1b-prod-cp
@@ -52,9 +52,9 @@ The default IP address allocations are as follows. If these allocations need to 
 10.195.1.11    metal-3-apps-dc2a-prod-cp-1
 10.195.1.12    metal-3-apps-dc2a-prod-cp-2
 10.195.1.13    metal-3-apps-dc2a-prod-cp-3
-10.195.1.21    metal-3-apps-dc2a-prod-worker-1
-10.195.1.22    metal-3-apps-dc2a-prod-worker-2
-10.195.1.23    metal-3-apps-dc2a-prod-worker-3
+10.195.1.18    metal-3-apps-dc2a-prod-worker-1
+10.195.1.19    metal-3-apps-dc2a-prod-worker-2
+10.195.1.20    metal-3-apps-dc2a-prod-worker-3
 
 # VIPs
 10.195.1.2     metal-3-apps-dc2a-prod-cp
@@ -68,9 +68,9 @@ The default IP address allocations are as follows. If these allocations need to 
 10.195.2.11    metal-4-apps-dc2b-prod-cp-1
 10.195.2.12    metal-4-apps-dc2b-prod-cp-2
 10.195.2.13    metal-4-apps-dc2b-prod-cp-3
-10.195.2.21    metal-4-apps-dc2b-prod-worker-1
-10.195.2.22    metal-4-apps-dc2b-prod-worker-2
-10.195.2.23    metal-4-apps-dc2b-prod-worker-3
+10.195.2.18    metal-4-apps-dc2b-prod-worker-1
+10.195.2.19    metal-4-apps-dc2b-prod-worker-2
+10.195.2.20    metal-4-apps-dc2b-prod-worker-3
 
 # VIPs
 10.195.2.2     metal-4-apps-dc2b-prod-cp
