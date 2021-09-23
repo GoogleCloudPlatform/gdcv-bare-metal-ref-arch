@@ -2,7 +2,16 @@
 
 ## Google Cloud Platform(GCP) account requirements
 
-See the [Logging into gcloud](https://cloud.google.com/anthos/gke/docs/bare-metal/1.6/installing/install-prereq#logging_into_gcloud) section of the [Installation prerequisities overview](https://cloud.google.com/anthos/gke/docs/bare-metal/1.6/installing/install-prereq) documentation for the IAM role requirements.
+See the [Logging into gcloud](https://cloud.google.com/anthos/clusters/docs/bare-metal/installing/install-prereq#logging_into_gcloud) section of the [Installation prerequisities overview](https://cloud.google.com/anthos/clusters/docs/bare-metal/installing/install-prereq) documentation for the IAM role requirements.
+
+### Quota
+
+The following quota limits are required in the PLATFORM_PROJECT_ID project to provision all of the instances with the default configuration:
+
+| Service            | Limit name      | Dimensions (e.g location) | Limit |
+|--------------------|-----------------|---------------------------|-------|
+| Compute Engine API | N2 CPUs         | region: us-central1       | 100   |
+| Compute Engine API | N2 CPUs         | region: us-west1          | 96    |
 
 ## Prepare Cloud Shell
 
@@ -37,7 +46,7 @@ See the [Logging into gcloud](https://cloud.google.com/anthos/gke/docs/bare-meta
    ```
 1. **[Cloud Shell]** Enable additional configuration for GCE with VXLAN:
    ```
-   export ABM_ADDITIONAL_CONF=gce-vxlan
+   export ABM_ADDITIONAL_CONF=gce
    ```   
 1. **[Cloud Shell]** Change directory into `anthos-bare-metal-ref-arch`
    ```
@@ -72,11 +81,6 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 
 ## Create the administrative host
 
-> **NOTE**: The following quota limits are required in the PLATFORM_PROJECT_ID project to provision all of the instances:
->
-> - us-central1: >= 96 CPUs
-> - us-west1: >= 96 CPUs
-
 1. Open Cloud Shell
 1. **[Cloud Shell]** Create the administrative host
    ```
@@ -103,7 +107,7 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ```
 1. **[Admin Host]** Enable additional configuration for GCE with VXLAN
    ```
-   export ABM_ADDITIONAL_CONF=gce-vxlan
+   export ABM_ADDITIONAL_CONF=gce
    ```   
 1. **[Admin Host]** Change directory into `anthos-bare-metal-ref-arch`
    ```
@@ -127,11 +131,6 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ```
 
 ## Create the GCE instances
-
-> **NOTE**: The following quota limits are required in the PLATFORM_PROJECT_ID project to provision all of the instances:
->
-> - us-central1: >= 96 CPUs
-> - us-west1: >= 96 CPUs
 
 1. Connect to the administrative host
 1. **[Admin Host]** Authenticate `gcloud` and set the application-default
