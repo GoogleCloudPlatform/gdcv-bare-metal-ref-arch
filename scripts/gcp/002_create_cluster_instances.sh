@@ -26,6 +26,11 @@ for cluster_name in $(get_cluster_names); do
         network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${REGION}/subnetworks/default"
     fi
 
+    worker_accelerator_args=""
+    if [[ ! -z "${WORKER_MACHINE_ACCELERATOR_TYPE}" && ! -z "${WORKER_MACHINE_ACCELERATOR_COUNT}" ]]; then
+        worker_accelerator_args="--accelerator=type=${WORKER_MACHINE_ACCELERATOR_TYPE},count=${WORKER_MACHINE_ACCELERATOR_COUNT} --maintenance-policy TERMINATE --restart-on-failure"
+    fi
+
     for cp in $(seq 1 $(get_number_of_control_plane_nodes)); do
         hostname="${cluster_name}-cp-${cp}"
         
@@ -63,7 +68,7 @@ ${network_args}"
 --project=${PLATFORM_PROJECT_ID} \
 --quiet \
 --zone=${ZONE} \
-${network_args}"
+${network_args} ${worker_accelerator_args}"
     done
 done
 
