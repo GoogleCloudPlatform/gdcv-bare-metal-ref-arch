@@ -65,6 +65,7 @@ source ${ENVIRONMENT_FILE}
 
 # Variable with dependencies above
 grep -q "export ABM_CONF_DIR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ABM_CONF_DIR=${ABM_CONF_DIR:-${ABM_WORK_DIR}/conf}" >> ${ENVIRONMENT_FILE}
+grep -q "export ACM_REPO_DIRECTORY=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ACM_REPO_DIRECTORY=${ACM_REPO_DIRECTORY:-${ABM_WORK_DIR}/acm}" >> ${ENVIRONMENT_FILE}
 grep -q "export BMCTL_WORKSPACE_DIR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export BMCTL_WORKSPACE_DIR=${BMCTL_WORKSPACE_DIR:-${ABM_WORK_DIR}/bmctl-workspace}" >> ${ENVIRONMENT_FILE}
 
 DEPLOYMENT_USER_HOME=`eval echo "~${DEPLOYMENT_USER}"`

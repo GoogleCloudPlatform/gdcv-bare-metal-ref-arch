@@ -22,8 +22,6 @@ mkdir -p ${TEMP_DIR}
 SCM_SSH_KEY=${ABM_WORK_DIR}/keys/scm_ssh_key
 ACM_SOURCE_REPOSITORY=source.developers.google.com:2022/p/${PLATFORM_PROJECT_ID}/r/acm
 
-ACM_REPO_DIRECTORY=${ABM_WORK_DIR}/acm
-
 if [ ! -d ${ACM_REPO_DIRECTORY} ]; then
     title_no_wait "Create the Anthos Config Management(ACM) Cloud Source Repositories(CSR) repository"
     

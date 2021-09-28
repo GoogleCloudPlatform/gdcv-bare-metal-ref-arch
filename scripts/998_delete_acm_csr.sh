@@ -16,9 +16,12 @@
 
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Delete ACM CSR"
-load_global_config
+if [ -d ${ACM_REPO_DIRECTORY} ]; then
+    title_no_wait "Deleting the local ACM repository directory"
+    print_and_execute "rm -rf ${ACM_REPO_DIRECTORY}"
+fi
 
+title_no_wait "Deleteting ACM CSR"
 print_and_execute "gcloud source repos delete acm --project ${PLATFORM_PROJECT_ID} --quiet"
 
 check_local_error
