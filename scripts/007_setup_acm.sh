@@ -90,11 +90,11 @@ EOF
     bold_no_wait "Create the config-management-system namespace"
     print_and_execute "kubectl --context=${cluster_name} create namespace config-management-system"
 
-    bold_no_wait "Apply the apply-spec.yaml"
-    print_and_execute "gcloud beta container hub config-management apply --membership=${cluster_name} --config=${TEMP_DIR}/apply-spec.yaml --project=${PLATFORM_PROJECT_ID}"
-
     bold_no_wait "Create git-creds secret"
     print_and_execute "kubectl --context=${cluster_name} create secret generic git-creds --namespace=config-management-system --from-file=ssh=${SCM_SSH_KEY}"
+
+    bold_no_wait "Apply the apply-spec.yaml"
+    print_and_execute "gcloud beta container hub config-management apply --membership=${cluster_name} --config=${TEMP_DIR}/apply-spec.yaml --project=${PLATFORM_PROJECT_ID}"
 done
 
 bold_no_wait "Wait for configuration updates to be applied"

@@ -1,5 +1,5 @@
 This repository has been validated against the following versions:
-- Anthos on bare metal/`bmctl` 1.8.4
+- Anthos on bare metal/`bmctl` 1.9.0
 - Anthos Config Management 1.9.0
-- Anthos Service Mesh 1.10.4-asm.6
-- Google Cloud SDK 358.0.0
+- Anthos Service Mesh 1.11.2-asm.17
+- Google Cloud SDK 360.0.0

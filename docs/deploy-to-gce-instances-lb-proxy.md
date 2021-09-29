@@ -192,20 +192,14 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ${ABM_WORK_DIR}/scripts/gcp/lb-proxy/004_create_ingress_lb.sh
    ```
 
-## Login to the cluster with the Cloud Console
+## Configure Connect Gateway
 
 1. Connect to the administrative host
-1. **[Admin Host]** Generate the cluster login tokens
+1. **[Admin Host]** Configure Connect Gateway
    ```
-   ${ABM_WORK_DIR}/scripts/006_generate_login_tokens.sh
+   ${ABM_WORK_DIR}/scripts/006_configure_connect_gateway.sh
    ```
 1. Open the URL provided by the script
-1. For each cluster:
-   1. Click on the cluster name
-   1. Click Login
-   1. Choose Token as the method for authentication
-   1. Paste the token from the `006_generate_login_tokens.sh` script for the associated cluster
-   1. Click Login
 1. Verify that all clusters show healthy
 
 ## Configure Anthos Config Management(ACM)

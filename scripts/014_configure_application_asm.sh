@@ -18,9 +18,16 @@ source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
 export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do
-    
-    title_no_wait "Applying ASM istio-manifests on ${cluster_name}"
+    title_no_wait "Applying ASM changes on ${cluster_name}"
+
+    bold_no_wait "Labeling the ${APP_NAMESPACE} namespace"
+    print_and_execute "kubectl --context=${cluster_name} label namespace ${APP_NAMESPACE} istio.io/rev=${ASM_REV_LABEL} --overwrite"
+
+    bold_no_wait "Applying ASM istio-manifests"
     print_and_execute "kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} apply -f ${ABM_WORK_DIR}/bank-of-anthos/istio-manifests"
+
+    bold_no_wait "Doing a rolling restarting of the deployments"
+    print_and_execute "kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} rollout restart deployment"
     echo
 done
 
