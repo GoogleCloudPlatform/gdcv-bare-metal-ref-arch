@@ -14,3 +14,5 @@
 
 export REGION=us-central1
 export ZONE=us-central1-b
+
+export CLOUD_OPS_REGION=us-central1

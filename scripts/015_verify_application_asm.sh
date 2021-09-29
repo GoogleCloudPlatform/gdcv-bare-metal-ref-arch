@@ -18,9 +18,6 @@ source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
 export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do
-    title_no_wait "Verify ASM revision label"
-    print_and_execute "kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE}  get pods -l istio.io/rev=${ASM_REVISION} --show-labels"
-    
     title_no_wait "Verify application on ${cluster_name}"
     print_and_execute "ASM_EXTERNAL_IP=$(kubectl --context=${cluster_name} --namespace=${ASM_GATEWAY_NAMESPACE} get service/istio-ingressgateway --output jsonpath='{.status.loadBalancer.ingress[0].ip}')"
     if [ -z ${ASM_EXTERNAL_IP} ]; then
