@@ -60,10 +60,6 @@ for cluster_name in $(get_cluster_names); do
     bold_no_wait "Deleting backend '${backend_443_name}'"
     print_and_execute "gcloud compute backend-services delete --quiet ${backend_443_name} --global"
 
-    health_check_name=abm-asm-lb-health-check
-    bold_no_wait "Deleting TCP health check '${health_check_name}'"
-    print_and_execute "gcloud compute health-checks delete --quiet ${health_check_name}"
-
     neg_80_name=${cluster_name}-asm-80-neg
     bold_no_wait "Deleting network endpoint group '${neg_80_name}'"
     print_and_execute "gcloud compute network-endpoint-groups delete --quiet ${neg_80_name} --zone=${ZONE}"
@@ -110,10 +106,6 @@ for cluster_name in $(get_cluster_names); do
     bold_no_wait "Deleting backend '${backend_443_name}'"
     print_and_execute "gcloud compute backend-services delete --quiet ${backend_443_name} --global"
 
-    health_check_name=abm-ingress-lb-health-check
-    bold_no_wait "Deleting TCP health check '${health_check_name}'"
-    print_and_execute "gcloud compute health-checks delete --quiet ${health_check_name}"
-
     neg_80_name=${cluster_name}-ingress-80-neg
     bold_no_wait "Deleting network endpoint group '${neg_80_name}'"
     print_and_execute "gcloud compute network-endpoint-groups delete --quiet ${neg_80_name} --zone=${ZONE}"
@@ -140,10 +132,6 @@ for cluster_name in $(get_cluster_names); do
     bold_no_wait "Deleting backend '${backend_name}'"
     print_and_execute "gcloud compute backend-services delete --quiet ${backend_name} --global"
 
-    health_check_name=abm-cp-lb-health-check
-    bold_no_wait "Deleting HTTPS health check '${health_check_name}'"
-    print_and_execute "gcloud compute health-checks delete --quiet ${health_check_name}"
-
     neg_name=${cluster_name}-cp-neg
     bold_no_wait "Deleting network endpoint group '${neg_name}'"
     print_and_execute "gcloud compute network-endpoint-groups delete --quiet ${neg_name} --zone=${ZONE}"
@@ -152,6 +140,18 @@ for cluster_name in $(get_cluster_names); do
     bold_no_wait "Deleting address '${address_name}'"
     print_and_execute "gcloud compute addresses delete --quiet ${address_name} --global"
 done
+
+health_check_name=abm-asm-lb-health-check
+bold_no_wait "Deleting TCP health check '${health_check_name}'"
+print_and_execute "gcloud compute health-checks delete --quiet ${health_check_name}"
+
+health_check_name=abm-ingress-lb-health-check
+bold_no_wait "Deleting TCP health check '${health_check_name}'"
+print_and_execute "gcloud compute health-checks delete --quiet ${health_check_name}"
+
+health_check_name=abm-cp-lb-health-check
+bold_no_wait "Deleting HTTPS health check '${health_check_name}'"
+print_and_execute "gcloud compute health-checks delete --quiet ${health_check_name}"
 
 check_local_error
 total_runtime
