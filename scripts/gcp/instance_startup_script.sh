@@ -21,10 +21,6 @@ apt install -y jq
 # Disable Uncomplicated Firewall (ufw)
 ufw disable
 
-# Disable AppArmor
-systemctl stop apparmor.service
-systemctl disable apparmor.service
-
 # Add anthos group and user
 addgroup \
 --gid 2000 \
