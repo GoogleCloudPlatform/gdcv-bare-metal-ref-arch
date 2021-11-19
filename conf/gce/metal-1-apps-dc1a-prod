@@ -15,6 +15,7 @@
 export REGION=us-central1
 export ZONE=us-central1-a
 
+export NETWORK=default
 export SUBNET=default
 
 export CLOUD_OPS_REGION=us-central1

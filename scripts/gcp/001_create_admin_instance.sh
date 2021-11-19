@@ -23,7 +23,7 @@ print_and_execute "gcloud services enable compute.googleapis.com --project ${PLA
 title_no_wait "Creating administrative instance"
 load_global_config
 
-network_args="--network ${NETWORK_NAME}"
+network_args="--network ${ADMIN_WORKSTATION_NETWORK}"
 if [ ${USE_SHARED_VPC,,} == "true" ]; then
     network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${ADMIN_WORKSTATION_REGION}/subnetworks/${ADMIN_WORKSTATION_SUBNET}"
 fi

@@ -43,11 +43,11 @@ for cluster_name in $(get_cluster_names); do
     done
 
     bold_no_wait "Processing control plane load balancer"
-    cp_lb_vip=$(gcloud compute addresses describe ${cluster_name}-cp-address --global --format='value(address)')
+    cp_lb_vip=$(gcloud compute addresses describe ${cluster_name}-cp-address --project=${PLATFORM_PROJECT_ID} --global --format='value(address)')
     add_or_replace_env_var_in_file "${conf_file}" "CP_LB_VIP" "${cp_lb_vip}"
 
     bold_no_wait "Processing ingress load balancer"
-    ingress_lb_vip=$(gcloud compute addresses describe ${cluster_name}-ingress-address --global --format='value(address)')
+    ingress_lb_vip=$(gcloud compute addresses describe ${cluster_name}-ingress-address --project=${PLATFORM_PROJECT_ID} --global --format='value(address)')
     add_or_replace_env_var_in_file "${conf_file}" "INGRESS_LB_VIP" "${ingress_lb_vip}"
 
     bold_no_wait "Removing LB_ADDRESS_POOL"
