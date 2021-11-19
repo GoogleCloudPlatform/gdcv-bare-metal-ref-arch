@@ -18,7 +18,7 @@
 #export -f compute_required_cpus
 
 get_cluster_conf_files () {
-    echo $(find ${ABM_WORK_DIR}/conf -maxdepth 1 -type f | egrep -v '/global$' | sort)
+    echo $(find ${ABM_WORK_DIR}/conf -maxdepth 1 -type f | egrep -v '/global$|\.ignore$' | sort)
 }
 export -f get_cluster_conf_files
 
