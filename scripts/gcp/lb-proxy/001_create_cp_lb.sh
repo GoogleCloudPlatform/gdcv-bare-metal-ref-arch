@@ -20,48 +20,53 @@ source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 firewall_rule_name=allow-abm-cp-proxy-and-health-check 
 firewall_rule_tag=abm-cp-lb
 title_no_wait "Creating the firewall rule '${firewall_rule_name}' with tags '${firewall_rule_tag}'"
-print_and_execute "gcloud compute firewall-rules create ${firewall_rule_name} --allow tcp:6444 --source-ranges 130.211.0.0/22,35.191.0.0/16 --target-tags ${firewall_rule_tag}"
+print_and_execute "gcloud compute firewall-rules create ${firewall_rule_name} --project ${NETWORK_PROJECT_ID} --allow tcp:6444 --source-ranges 130.211.0.0/22,35.191.0.0/16 --target-tags ${firewall_rule_tag}"
 
 health_check_name=abm-cp-lb-health-check
 title_no_wait "Creating HTTPS health check '${health_check_name}'"
-print_and_execute "gcloud compute health-checks create https ${health_check_name} --port=6444 --request-path=/readyz"
+print_and_execute "gcloud compute health-checks create https ${health_check_name} --project ${PLATFORM_PROJECT_ID} --port=6444 --request-path=/readyz"
 
 for cluster_name in $(get_cluster_names); do
     title_no_wait "Creating the control plane load balancer for ${cluster_name}"
     load_cluster_config ${cluster_name}
 
+    network_args="--network ${NETWORK}"
+    if [ ${USE_SHARED_VPC,,} == "true" ]; then
+        network_args="--network projects/${NETWORK_PROJECT_ID}/global/networks/${NETWORK} --subnet projects/${NETWORK_PROJECT_ID}/regions/${REGION}/subnetworks/${SUBNET}"
+    fi
+
     address_name=${cluster_name}-cp-address
     bold_no_wait "Creating address '${address_name}'"
-    print_and_execute "gcloud compute addresses create ${address_name} --global"
+    print_and_execute "gcloud compute addresses create ${address_name} --project ${PLATFORM_PROJECT_ID} --global"
 
     neg_name=${cluster_name}-cp-neg
     bold_no_wait "Creating network endpoint group '${neg_name}'"
-    print_and_execute "gcloud compute network-endpoint-groups create ${neg_name} --network-endpoint-type=GCE_VM_IP_PORT --zone=${ZONE} --network=default"
+    print_and_execute "gcloud compute network-endpoint-groups create ${neg_name} --project ${PLATFORM_PROJECT_ID} --network-endpoint-type=GCE_VM_IP_PORT --zone=${ZONE} ${network_args}"
 
     for cp in $(seq 1 $(get_number_of_control_plane_nodes)); do
         hostname="${cluster_name}-cp-${cp}"
         
         bold_no_wait "Adding ${hostname} in ${ZONE} to ${neg_name}"
-        print_and_execute "gcloud compute network-endpoint-groups update ${neg_name} --zone=${ZONE} --add-endpoint='instance=${hostname},port=6444'"
+        print_and_execute "gcloud compute network-endpoint-groups update ${neg_name} --project ${PLATFORM_PROJECT_ID} --zone=${ZONE} --add-endpoint='instance=${hostname},port=6444'"
 
         bold_no_wait "Adding tag ${firewall_rule_tag} to ${hostname}"
-        print_and_execute "gcloud compute instances add-tags ${hostname} --zone=${ZONE} --tags=${firewall_rule_tag}"
+        print_and_execute "gcloud compute instances add-tags ${hostname} --project ${PLATFORM_PROJECT_ID} --zone=${ZONE} --tags=${firewall_rule_tag}"
     done
 
     backend_name=${cluster_name}-cp-lb
     bold_no_wait "Creating backend '${backend_name}'"
-    print_and_execute "gcloud compute backend-services create ${backend_name} --global --health-checks=${health_check_name} --protocol=TCP"
+    print_and_execute "gcloud compute backend-services create ${backend_name} --project ${PLATFORM_PROJECT_ID} --global --health-checks=${health_check_name} --protocol=TCP"
 
     bold_no_wait "Adding '${neg_name}' to '${backend_name}'"
-    print_and_execute "gcloud compute backend-services add-backend ${backend_name} --balancing-mode=CONNECTION --global --max-connections=1000 --network-endpoint-group=${neg_name} --network-endpoint-group-zone=${ZONE}"
+    print_and_execute "gcloud compute backend-services add-backend ${backend_name} --project ${PLATFORM_PROJECT_ID} --balancing-mode=CONNECTION --global --max-connections=1000 --network-endpoint-group=${neg_name} --network-endpoint-group-zone=${ZONE}"
 
     tcp_proxy_name=${cluster_name}-cp-tcp-proxy
     bold_no_wait "Creating TCP proxy '${tcp_proxy_name}'"
-    print_and_execute "gcloud compute target-tcp-proxies create ${tcp_proxy_name} --backend-service=${backend_name}"
+    print_and_execute "gcloud compute target-tcp-proxies create ${tcp_proxy_name} --project ${PLATFORM_PROJECT_ID} --backend-service=${backend_name}"
 
     forwarding_rule_name=${cluster_name}-cp-forwarding-rule
     bold_no_wait "Creating forwarding rule '${forwarding_rule_name}'"
-    print_and_execute "gcloud compute forwarding-rules create ${forwarding_rule_name} --address=${address_name} --global --ports=443 --target-tcp-proxy=${tcp_proxy_name}"
+    print_and_execute "gcloud compute forwarding-rules create ${forwarding_rule_name} --project ${PLATFORM_PROJECT_ID} --address=${address_name} --global --ports=443 --target-tcp-proxy=${tcp_proxy_name}"
 done
 
 check_local_error

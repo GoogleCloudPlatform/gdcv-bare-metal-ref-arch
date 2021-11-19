@@ -28,6 +28,8 @@ fi
 export ENVIRONMENT_FILE=${ABM_WORK_DIR}/scripts/vars.sh
 touch ${ENVIRONMENT_FILE}
 
+source ${ABM_WORK_DIR}/scripts/helpers/environment.sh
+
 source ${ENVIRONMENT_FILE}
 
 # Create a logs folder and file and send stdout and stderr to console and log file
@@ -57,7 +59,6 @@ grep -q "export DEPLOYMENT_USER=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} ||
 grep -q "export FOLDER_ID=" ${ENVIRONMENT_FILE} || echo -e "export FOLDER_ID=${FOLDER_ID:-}" >> ${ENVIRONMENT_FILE}
 grep -q "export KIND_VERSION=" ${ENVIRONMENT_FILE} || echo -e "export KIND_VERSION=${KIND_VERSION:-0.11.1}" >> ${ENVIRONMENT_FILE}
 grep -q "export KUSTOMIZATION_TYPE=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export KUSTOMIZATION_TYPE=${KUSTOMIZATION_TYPE:-hybrid}" >> ${ENVIRONMENT_FILE}
-grep -q "export NETWORK_NAME=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export NETWORK_NAME=${NETWORK_NAME:-default}" >> ${ENVIRONMENT_FILE}
 grep -q "export NETWORK_PROJECT_ID=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export NETWORK_PROJECT_ID=${NETWORK_PROJECT_ID:-project-0-net-prod}" >> ${ENVIRONMENT_FILE}
 grep -q "export ORGANIZATION_ID=" ${ENVIRONMENT_FILE} || echo -e "export ORGANIZATION_ID=${ORGANIZATION_ID:-}" >> ${ENVIRONMENT_FILE}
 grep -q "export PLATFORM_PROJECT_ID=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export PLATFORM_PROJECT_ID=${PLATFORM_PROJECT_ID:-project-1-platform-prod}" >> ${ENVIRONMENT_FILE}
@@ -70,12 +71,16 @@ grep -q "export ABM_CONF_DIR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || ec
 grep -q "export ACM_REPO_DIRECTORY=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ACM_REPO_DIRECTORY=${ACM_REPO_DIRECTORY:-${ABM_WORK_DIR}/acm}" >> ${ENVIRONMENT_FILE}
 grep -q "export ASM_REV_LABEL=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_REV_LABEL=${ASM_REV_LABEL:-asm-${ASM_VERSION_MAJOR}${ASM_VERSION_MINOR}${ASM_VERSION_POINT}-${ASM_VERSION_REV}}" >> ${ENVIRONMENT_FILE}
 grep -q "export BMCTL_WORKSPACE_DIR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export BMCTL_WORKSPACE_DIR=${BMCTL_WORKSPACE_DIR:-${ABM_WORK_DIR}/bmctl-workspace}" >> ${ENVIRONMENT_FILE}
-grep -q "export PLATFORM_PROJECT_NUMBER=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export PLATFORM_PROJECT_NUMBER=${PLATFORM_PROJECT_NUMBER:-$(gcloud projects describe ${PLATFORM_PROJECT_ID} --format='value(projectNumber)')}" >> ${ENVIRONMENT_FILE}
+
+if [[ ${ADMIN_WORKSTATION_PREPARED} == "true" ]]; then
+    grep -q "export PLATFORM_PROJECT_NUMBER=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export PLATFORM_PROJECT_NUMBER=${PLATFORM_PROJECT_NUMBER:-$(gcloud projects describe ${PLATFORM_PROJECT_ID} --format='value(projectNumber)')}" >> ${ENVIRONMENT_FILE}
+    
+    source ${ENVIRONMENT_FILE}
+
+    grep -q "export ASM_MESH_ID=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_MESH_ID=${ASM_MESH_ID:-proj-${PLATFORM_PROJECT_NUMBER}}" >> ${ENVIRONMENT_FILE}
+fi
 
 source ${ENVIRONMENT_FILE}
-
-# Variable with dependencies on dependencies
-grep -q "export ASM_MESH_ID=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_MESH_ID=${ASM_MESH_ID:-proj-${PLATFORM_PROJECT_NUMBER}}" >> ${ENVIRONMENT_FILE}
 
 DEPLOYMENT_USER_HOME=`eval echo "~${DEPLOYMENT_USER}"`
 if [[ ! ${DEPLOYMENT_USER_HOME} = ~* ]] || [ ! -z ${DEPLOYMENT_USER_SSH_KEY} ]; then

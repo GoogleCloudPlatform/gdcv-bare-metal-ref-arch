@@ -21,7 +21,7 @@ for cluster_name in $(get_cluster_names); do
     title_no_wait "Creating instances for ${cluster_name}"
     load_cluster_config ${cluster_name}
 
-    network_args="--network ${NETWORK_NAME}"
+    network_args="--network ${NETWORK}"
     if [ ${USE_SHARED_VPC,,} == "true" ]; then
         network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${REGION}/subnetworks/${SUBNET}"
     fi

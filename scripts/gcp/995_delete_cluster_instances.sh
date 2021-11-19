@@ -20,7 +20,7 @@ source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 for cluster_name in $(get_cluster_names); do
     load_cluster_config ${cluster_name}
     
-    network_args="--network ${NETWORK_NAME}"
+    network_args="--network ${NETWORK}"
     if [ ${USE_SHARED_VPC,,} == "true" ]; then
         network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${REGION}/subnetworks/${SUBNET}"
     fi

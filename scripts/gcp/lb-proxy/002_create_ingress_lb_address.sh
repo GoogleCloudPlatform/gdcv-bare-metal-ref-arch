@@ -20,7 +20,7 @@ source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 for cluster_name in $(get_cluster_names); do
     address_name=${cluster_name}-ingress-address
     bold_no_wait "Creating ingress load balancer address '${address_name}' for '${cluster_name}'"
-    print_and_execute "gcloud compute addresses create ${address_name} --global"
+    print_and_execute "gcloud compute addresses create ${address_name} --project ${PLATFORM_PROJECT_ID} --global"
 done
 
 check_local_error

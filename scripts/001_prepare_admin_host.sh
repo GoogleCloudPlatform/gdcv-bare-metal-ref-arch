@@ -56,9 +56,9 @@ if [ ! -f ${GCLOUD_CMD} ]; then
 fi
 
 title_no_wait "Install krew for kubectl"
-print_and_execute "curl -fsSLO https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.tar.gz"
-print_and_execute "tar xfz  krew.tar.gz"
-KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_$(uname -m | sed -e 's/x86_64/amd64/' -e 's/arm.*$/arm/')"
+print_and_execute "curl -fsSLO https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-linux_amd64.tar.gz"
+print_and_execute "tar xfz krew-linux_amd64.tar.gz"
+KREW="./krew-linux_amd64"
 PATH=${PATH}:\${HOME}/.krew/bin
 print_and_execute "${KREW} install krew"
 print_and_execute "${KREW} update"
@@ -105,6 +105,8 @@ mkdir -p ${ABM_WORK_DIR}/keys
 
 sudo cp ${DEPLOYMENT_USER_SSH_KEY} ${ABM_WORK_DIR}/keys/id_rsa
 sudo chown ${USER}:${USER} ${ABM_WORK_DIR}/keys/id_rsa
+
+set_or_overwrite_environment_variable "ADMIN_WORKSTATION_PREPARED=true"
 
 check_local_error
 total_runtime
