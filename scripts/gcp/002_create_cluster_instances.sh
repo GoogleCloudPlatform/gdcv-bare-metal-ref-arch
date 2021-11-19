@@ -23,7 +23,7 @@ for cluster_name in $(get_cluster_names); do
 
     network_args="--network ${NETWORK_NAME}"
     if [ ${USE_SHARED_VPC,,} == "true" ]; then
-        network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${REGION}/subnetworks/default"
+        network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${REGION}/subnetworks/${SUBNET}"
     fi
 
     worker_accelerator_args=""
