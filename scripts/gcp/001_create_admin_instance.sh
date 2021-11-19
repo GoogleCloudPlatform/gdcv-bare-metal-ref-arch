@@ -25,7 +25,7 @@ load_global_config
 
 network_args="--network ${NETWORK_NAME}"
 if [ ${USE_SHARED_VPC,,} == "true" ]; then
-    network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${ADMIN_WORKSTATION_REGION}/subnetworks/${SUBNET}"
+    network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${ADMIN_WORKSTATION_REGION}/subnetworks/${ADMIN_WORKSTATION_SUBNET}"
 fi
 
 print_and_execute "gcloud compute instances create bare-metal-admin-1 \

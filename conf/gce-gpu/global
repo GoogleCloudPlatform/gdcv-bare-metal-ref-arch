@@ -16,6 +16,8 @@ export ADMIN_WORKSTATION_MACHINE_TYPE=n2-standard-4
 export ADMIN_WORKSTATION_REGION=us-central1
 export ADMIN_WORKSTATION_ZONE=us-central1-a
 
+export ADMIN_WORKSTATION_SUBNET=default
+
 export CP_MACHINE_TYPE=n2-standard-8
 
 export WORKER_MACHINE_TYPE=n1-standard-8
