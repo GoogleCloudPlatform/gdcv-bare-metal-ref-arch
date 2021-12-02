@@ -45,7 +45,7 @@ for cluster_name in $(get_cluster_names); do
     unset CLUSTER_NAME
    
     title_no_wait "Installing Anthos Service Mesh (ASM) v${MAJOR}.${MINOR}.${POINT}-asm.${REV} on ${cluster_name}"
-    print_and_execute "${ASMCLI_BIN} install --fleet_id ${PLATFORM_PROJECT_ID} --kubeconfig ${kubeconfig_file} --output_dir ${output_dir} --platform multicloud --enable_all --ca mesh_ca"
+    print_and_execute "${ASMCLI_BIN} install --fleet_id ${PLATFORM_PROJECT_ID} --kubeconfig ${kubeconfig_file} --network_id ${cluster_name}-net --output_dir ${output_dir} --platform multicloud --enable_all --ca mesh_ca"
 
     bold_no_wait "Create ingressgateway in '${ASM_GATEWAY_NAMESPACE}' namespace"
     print_and_execute "kubectl --context ${cluster_name} create namespace ${ASM_GATEWAY_NAMESPACE}"

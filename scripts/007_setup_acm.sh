@@ -97,14 +97,20 @@ EOF
     print_and_execute "gcloud beta container hub config-management apply --membership=${cluster_name} --config=${TEMP_DIR}/apply-spec.yaml --project=${PLATFORM_PROJECT_ID}"
 done
 
-bold_no_wait "Wait for configuration updates to be applied"
-sleep 60
+title_no_wait "Waiting for ACM sync and install to complete"
+while [[ $(gcloud beta container hub config-management status --project=${PLATFORM_PROJECT_ID} --filter="(acm_status.config_sync!=SYNCED AND acm_status.config_sync!=INSTALLED)" 2>/dev/null | wc -l) != "0" ]]; do
+    sleep 5
+done
 
-export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
-for cluster_name in $(get_cluster_names); do
-    title_no_wait "Wating for ACM to deploy in ${cluster_name}"
-    print_and_execute "kubectl --context=${cluster_name} --namespace=config-management-system wait --for=condition=available --timeout=600s deployments --all"
-    print_and_execute "kubectl --context=${cluster_name} --namespace=gatekeeper-system wait --for=condition=available --timeout=600s deployments --all"
+test_namespace="acm-test"
+for current_cluster_name in $(get_cluster_names); do
+    load_cluster_config ${current_cluster_name}
+
+    while ! kubectl --context ${current_cluster_name} create namespace ${test_namespace} &>/dev/null; do
+        sleep 5
+    done
+
+    kubectl --context ${current_cluster_name} delete namespace ${test_namespace} &>/dev/null
 done
 
 check_local_error
