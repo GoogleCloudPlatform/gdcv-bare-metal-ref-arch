@@ -22,7 +22,7 @@ The following quota limits are required in the PLATFORM_PROJECT_ID project to pr
 1. Open Cloud Shell
 1. **[Cloud Shell]** Authenticate `gcloud` and set the application-default
    ```
-   gcloud auth login --activate --quiet --update-adc
+   gcloud auth login --activate --no-launch-browser --quiet --update-adc
    ```
 1. **[Cloud Shell]** Clone this project to the Cloud Shell home directory
    ```
@@ -141,7 +141,7 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 1. Connect to the administrative host
 1. **[Admin Host]** Authenticate `gcloud` and set the application-default
    ```
-   gcloud auth login --activate --quiet --update-adc
+   gcloud auth login --activate --no-launch-browser --quiet --update-adc
    ```
    > **NOTE**: If you get an error message such as: ` gcloud: command not found` or `-bash: /snap/bin/gcloud: No such file or directory`, logout to activate the shell configuration changes.
 1. **[Admin Host]** Create the GCE cluster instances

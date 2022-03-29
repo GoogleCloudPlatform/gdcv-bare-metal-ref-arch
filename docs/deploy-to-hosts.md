@@ -71,7 +71,7 @@ This guide uses the `anthos` user for the deployment of the required software to
 1. Connect to the administrative host
 1. **[Admin Host]** Authenticate `gcloud` and set the application-default
    ```
-   gcloud auth login --activate --quiet --update-adc
+   gcloud auth login --activate --no-launch-browser --quiet --update-adc
    ```
 1. **[Admin Host]** Create the GCP projects
    ```
