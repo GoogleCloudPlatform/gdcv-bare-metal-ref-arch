@@ -17,6 +17,7 @@
 export start_timestamp=`date +%s`
 
 source ${ABM_WORK_DIR}/scripts/helpers/configuration.sh
+source ${ABM_WORK_DIR}/scripts/helpers/files.sh
 source ${ABM_WORK_DIR}/scripts/helpers/functions.sh
 
 pv_installed=`which pv`
