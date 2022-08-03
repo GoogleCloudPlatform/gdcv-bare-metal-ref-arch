@@ -143,3 +143,7 @@ total_runtime () {
     fi
 }
 export -f total_runtime
+
+function echo_warning {
+    echo -e "${YELLOW}${@}${RESET}"
+}

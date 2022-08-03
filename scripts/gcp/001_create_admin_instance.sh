@@ -43,6 +43,11 @@ print_and_execute "gcloud compute instances create bare-metal-admin-1 \
 --zone=${ADMIN_WORKSTATION_ZONE} \
 ${network_args}"
 
+title_no_wait "Waiting for the administrative instance to be available"
+while ! gcloud compute ssh bare-metal-admin-1 --command=date --project=${PLATFORM_PROJECT_ID} --zone=${ADMIN_WORKSTATION_ZONE} &>/dev/null; do
+    sleep 1
+done
+
 check_local_error
 total_runtime
 exit ${local_error}

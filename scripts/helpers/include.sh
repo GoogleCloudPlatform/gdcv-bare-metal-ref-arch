@@ -39,55 +39,62 @@ touch ${LOG_FILE}
 exec 2>&1
 exec &> >(tee -i ${LOG_FILE})
 
-VALID_CHARACTERS="[:alnum:]_/\.\-"
-
-grep -q "export ABM_ADDITIONAL_CONF=" ${ENVIRONMENT_FILE} || echo -e "export ABM_ADDITIONAL_CONF=${ABM_ADDITIONAL_CONF:-}" >> ${ENVIRONMENT_FILE}
-grep -q "export ABM_WORK_DIR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ABM_WORK_DIR=${ABM_WORK_DIR}" >> ${ENVIRONMENT_FILE}
-grep -q "export APP_NAMESPACE=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export APP_NAMESPACE=${APP_NAMESPACE:-bofa}" >> ${ENVIRONMENT_FILE}
-grep -q "export APP_PROJECT_ID=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export APP_PROJECT_ID=${APP_PROJECT_ID:-project-2-bofa-prod}" >> ${ENVIRONMENT_FILE}
-grep -q "export ASM_GATEWAY_NAMESPACE=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_GATEWAY_NAMESPACE=${ASM_GATEWAY_NAMESPACE:-asm-gateway}" >> ${ENVIRONMENT_FILE}
-grep -q "export ASM_VERSION_MAJOR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_VERSION_MAJOR=${ASM_VERSION_MAJOR:-1}" >> ${ENVIRONMENT_FILE}
-grep -q "export ASM_VERSION_MINOR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_VERSION_MINOR=${ASM_VERSION_MINOR:-12}" >> ${ENVIRONMENT_FILE}
-grep -q "export ASM_VERSION_POINT=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_VERSION_POINT=${ASM_VERSION_POINT:-5}" >> ${ENVIRONMENT_FILE}
-grep -q "export ASM_VERSION_REV=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_VERSION_REV=${ASM_VERSION_REV:-0}" >> ${ENVIRONMENT_FILE}
-grep -q "export ASM_VERSION_CONFIG=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_VERSION_CONFIG=${ASM_VERSION_CONFIG:-1}" >> ${ENVIRONMENT_FILE}
-grep -q "export BILLING_ACCOUNT_ID=" ${ENVIRONMENT_FILE} || echo -e "export BILLING_ACCOUNT_ID=${BILLING_ACCOUNT_ID}" >> ${ENVIRONMENT_FILE}
-grep -q "export BMCTL_VERSION=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export BMCTL_VERSION=${BMCTL_VERSION:-1.10.2}" >> ${ENVIRONMENT_FILE}
-grep -q "export CLOUD_OPS_REGION=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export CLOUD_OPS_REGION=${CLOUD_OPS_REGION:-global}" >> ${ENVIRONMENT_FILE}
-grep -q "export CLOUD_SDK_VERSION=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export CLOUD_SDK_VERSION=${CLOUD_SDK_VERSION:-378.0.0}" >> ${ENVIRONMENT_FILE}
-grep -q "export DEPLOYMENT_USER=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || (echo -e "export DEPLOYMENT_USER=${DEPLOYMENT_USER:-anthos}" >> ${ENVIRONMENT_FILE} && source ${ENVIRONMENT_FILE})
-grep -q "export FOLDER_ID=" ${ENVIRONMENT_FILE} || echo -e "export FOLDER_ID=${FOLDER_ID:-}" >> ${ENVIRONMENT_FILE}
-grep -q "export KIND_VERSION=" ${ENVIRONMENT_FILE} || echo -e "export KIND_VERSION=${KIND_VERSION:-0.11.1}" >> ${ENVIRONMENT_FILE}
-grep -q "export KUSTOMIZATION_TYPE=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export KUSTOMIZATION_TYPE=${KUSTOMIZATION_TYPE:-hybrid}" >> ${ENVIRONMENT_FILE}
-grep -q "export NETWORK_PROJECT_ID=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export NETWORK_PROJECT_ID=${NETWORK_PROJECT_ID:-project-0-net-prod}" >> ${ENVIRONMENT_FILE}
-grep -q "export ORGANIZATION_ID=" ${ENVIRONMENT_FILE} || echo -e "export ORGANIZATION_ID=${ORGANIZATION_ID:-}" >> ${ENVIRONMENT_FILE}
-grep -q "export PLATFORM_PROJECT_ID=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export PLATFORM_PROJECT_ID=${PLATFORM_PROJECT_ID:-project-1-platform-prod}" >> ${ENVIRONMENT_FILE}
-grep -q "export USE_SHARED_VPC=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export USE_SHARED_VPC=${USE_SHARED_VPC:-true}" >> ${ENVIRONMENT_FILE}
-
-source ${ENVIRONMENT_FILE}
+set_environment_variable_skip_if_existing "ABM_ADDITIONAL_CONF=${ABM_ADDITIONAL_CONF:-}"
+set_environment_variable_skip_if_existing "ABM_WORK_DIR=${ABM_WORK_DIR}"
+set_environment_variable_skip_if_existing "APP_NAMESPACE=${APP_NAMESPACE:-bofa}"
+set_environment_variable_skip_if_existing "APP_PROJECT_ID=${APP_PROJECT_ID:-project-2-bofa-prod}"
+set_environment_variable_skip_if_existing "ASM_GATEWAY_NAMESPACE=${ASM_GATEWAY_NAMESPACE:-asm-gateway}"
+set_environment_variable_skip_if_existing "ASM_VERSION_MAJOR=${ASM_VERSION_MAJOR:-1}"
+set_environment_variable_skip_if_existing "ASM_VERSION_MINOR=${ASM_VERSION_MINOR:-14}"
+set_environment_variable_skip_if_existing "ASM_VERSION_POINT=${ASM_VERSION_POINT:-1}"
+set_environment_variable_skip_if_existing "ASM_VERSION_REV=${ASM_VERSION_REV:-3}"
+set_environment_variable_skip_if_existing "ASM_VERSION_CONFIG=${ASM_VERSION_CONFIG:-1}"
+set_environment_variable_skip_if_existing "BILLING_ACCOUNT_ID=${BILLING_ACCOUNT_ID}"
+set_environment_variable_skip_if_existing "BMCTL_VERSION=${BMCTL_VERSION:-1.12.1}"
+set_environment_variable_skip_if_existing "CLOUD_OPS_REGION=${CLOUD_OPS_REGION:-global}"
+set_environment_variable_skip_if_existing "CLOUD_SDK_VERSION=${CLOUD_SDK_VERSION:-394.0.0}"
+set_environment_variable_skip_if_existing "DEPLOYMENT_USER=${DEPLOYMENT_USER:-anthos}"
+set_environment_variable_skip_if_existing "FOLDER_ID=${FOLDER_ID:-}"
+set_environment_variable_skip_if_existing "KIND_VERSION=${KIND_VERSION:-0.11.1}"
+set_environment_variable_skip_if_existing "KUSTOMIZATION_TYPE=${KUSTOMIZATION_TYPE:-hybrid}"
+set_environment_variable_skip_if_existing "NETWORK_PROJECT_ID=${NETWORK_PROJECT_ID:-project-0-net-prod}"
+set_environment_variable_skip_if_existing "ORGANIZATION_ID=${ORGANIZATION_ID:-}"
+set_environment_variable_skip_if_existing "PLATFORM_PROJECT_ID=${PLATFORM_PROJECT_ID:-project-1-platform-prod}"
+set_environment_variable_skip_if_existing "USE_SHARED_VPC=${USE_SHARED_VPC:-true}"
 
 # Variable with dependencies above
-grep -q "export ABM_CONF_DIR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ABM_CONF_DIR=${ABM_CONF_DIR:-${ABM_WORK_DIR}/conf}" >> ${ENVIRONMENT_FILE}
-grep -q "export ACM_REPO_DIRECTORY=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ACM_REPO_DIRECTORY=${ACM_REPO_DIRECTORY:-${ABM_WORK_DIR}/acm}" >> ${ENVIRONMENT_FILE}
-grep -q "export ASM_REV_LABEL=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_REV_LABEL=${ASM_REV_LABEL:-asm-${ASM_VERSION_MAJOR}${ASM_VERSION_MINOR}${ASM_VERSION_POINT}-${ASM_VERSION_REV}}" >> ${ENVIRONMENT_FILE}
-grep -q "export BMCTL_WORKSPACE_DIR=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export BMCTL_WORKSPACE_DIR=${BMCTL_WORKSPACE_DIR:-${ABM_WORK_DIR}/bmctl-workspace}" >> ${ENVIRONMENT_FILE}
+set_environment_variable_skip_if_existing "ABM_CONF_DIR=${ABM_CONF_DIR:-${ABM_WORK_DIR}/conf}"
+set_environment_variable_skip_if_existing "ACM_REPO_DIRECTORY=${ACM_REPO_DIRECTORY:-${ABM_WORK_DIR}/acm}"
+set_environment_variable_skip_if_existing "ASM_REV_LABEL=${ASM_REV_LABEL:-asm-${ASM_VERSION_MAJOR}${ASM_VERSION_MINOR}${ASM_VERSION_POINT}-${ASM_VERSION_REV}}"
+set_environment_variable_skip_if_existing "BMCTL_WORKSPACE_DIR=${BMCTL_WORKSPACE_DIR:-${ABM_WORK_DIR}/bmctl-workspace}"
 
 if [[ ${ADMIN_WORKSTATION_PREPARED} == "true" ]]; then
-    grep -q "export PLATFORM_PROJECT_NUMBER=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export PLATFORM_PROJECT_NUMBER=${PLATFORM_PROJECT_NUMBER:-$(gcloud projects describe ${PLATFORM_PROJECT_ID} --format='value(projectNumber)')}" >> ${ENVIRONMENT_FILE}
-    
-    source ${ENVIRONMENT_FILE}
-
-    grep -q "export ASM_MESH_ID=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export ASM_MESH_ID=${ASM_MESH_ID:-proj-${PLATFORM_PROJECT_NUMBER}}" >> ${ENVIRONMENT_FILE}
+    set_environment_variable_skip_if_existing "PLATFORM_PROJECT_NUMBER=${PLATFORM_PROJECT_NUMBER:-$(gcloud projects describe ${PLATFORM_PROJECT_ID} --format='value(projectNumber)')}"
+    set_environment_variable_skip_if_existing "ASM_MESH_ID=${ASM_MESH_ID:-proj-${PLATFORM_PROJECT_NUMBER}}"
 fi
-
-source ${ENVIRONMENT_FILE}
 
 DEPLOYMENT_USER_HOME=`eval echo "~${DEPLOYMENT_USER}"`
 if [[ ! ${DEPLOYMENT_USER_HOME} = ~* ]] || [ ! -z ${DEPLOYMENT_USER_SSH_KEY} ]; then
-    grep -q "export DEPLOYMENT_USER_SSH_KEY=[${VALID_CHARACTERS}]\+$" ${ENVIRONMENT_FILE} || echo -e "export DEPLOYMENT_USER_SSH_KEY=${DEPLOYMENT_USER_SSH_KEY:-${DEPLOYMENT_USER_HOME}/.ssh/id_rsa}" >> ${ENVIRONMENT_FILE}
+    set_environment_variable_skip_if_existing "DEPLOYMENT_USER_SSH_KEY=${DEPLOYMENT_USER_SSH_KEY:-${DEPLOYMENT_USER_HOME}/.ssh/id_rsa}"
 fi
 
-sort -o ${ENVIRONMENT_FILE} ${ENVIRONMENT_FILE}
+sort -o ${ENVIRONMENT_FILE}{,}
+
+# Check for duplicates
+duplicates=$(awk -F' |=' '{print $2}' ${ENVIRONMENT_FILE} | uniq -c | egrep -v '^[[:blank:]]*1' | awk '{print $2}')
+if [[ "${duplicates}" != "" ]]; then
+    echo "[ERROR] Duplicate entries found in ${ENVIRONMENT_FILE}"
+    echo "----------------------------------------------------------------"
+    for dup in ${duplicates}; do
+        grep ${dup} ${ENVIRONMENT_FILE}
+    done
+    echo "----------------------------------------------------------------"
+    echo "Fixed any duplicates and retry the script, exiting!"
+    echo
+
+    exit -1
+fi
+
 source ${ENVIRONMENT_FILE}
 
 # Add environment file to .profile file
