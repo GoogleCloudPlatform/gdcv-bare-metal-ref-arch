@@ -54,11 +54,11 @@ set_environment_variable_skip_if_existing "BMCTL_VERSION=${BMCTL_VERSION:-1.12.1
 set_environment_variable_skip_if_existing "CLOUD_OPS_REGION=${CLOUD_OPS_REGION:-global}"
 set_environment_variable_skip_if_existing "CLOUD_SDK_VERSION=${CLOUD_SDK_VERSION:-394.0.0}"
 set_environment_variable_skip_if_existing "DEPLOYMENT_USER=${DEPLOYMENT_USER:-anthos}"
-set_environment_variable_skip_if_existing "FOLDER_ID=${FOLDER_ID:-}"
+set_environment_variable_skip_if_existing_blank_allowed "FOLDER_ID=${FOLDER_ID:-}"
 set_environment_variable_skip_if_existing "KIND_VERSION=${KIND_VERSION:-0.11.1}"
 set_environment_variable_skip_if_existing "KUSTOMIZATION_TYPE=${KUSTOMIZATION_TYPE:-hybrid}"
 set_environment_variable_skip_if_existing "NETWORK_PROJECT_ID=${NETWORK_PROJECT_ID:-project-0-net-prod}"
-set_environment_variable_skip_if_existing "ORGANIZATION_ID=${ORGANIZATION_ID:-}"
+set_environment_variable_skip_if_existing_blank_allowed "ORGANIZATION_ID=${ORGANIZATION_ID:-}"
 set_environment_variable_skip_if_existing "PLATFORM_PROJECT_ID=${PLATFORM_PROJECT_ID:-project-1-platform-prod}"
 set_environment_variable_skip_if_existing "USE_SHARED_VPC=${USE_SHARED_VPC:-true}"
 

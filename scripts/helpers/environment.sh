@@ -69,6 +69,17 @@ function set_environment_variable_skip_if_existing {
     source ${ENV_FILE}
 }
 
+function set_environment_variable_skip_if_existing_blank_allowed {
+    variable=${1%%=*}
+    value=${1#*=}
+
+    if ! grep -q "export ${variable}=" ${ENV_FILE}; then
+        echo -e "export ${variable}=${value}" >>${ENV_FILE}
+    fi
+
+    source ${ENV_FILE}
+}
+
 function set_or_overwrite_environment_variable {
     variable=${1%%=*}
     value=${1#*=}

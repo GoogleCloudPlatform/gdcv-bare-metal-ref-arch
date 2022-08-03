@@ -145,5 +145,5 @@ total_runtime () {
 export -f total_runtime
 
 function echo_warning {
-    echo -e "${YELLOW}${@}${RESET}"
+    echo -e "${YELLOW}${@}${NC}"
 }
