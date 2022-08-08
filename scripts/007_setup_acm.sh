@@ -19,8 +19,22 @@ source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 TEMP_DIR=${ABM_WORK_DIR}/tmp
 mkdir -p ${TEMP_DIR}
 
-SCM_SSH_KEY=${ABM_WORK_DIR}/keys/scm_ssh_key
-ACM_SOURCE_REPOSITORY=source.developers.google.com:2022/p/${PLATFORM_PROJECT_ID}/r/acm
+ABM_ACM_GSA_NAME="anthos-config-mgmt"
+ABM_ACM_GSA="${ABM_ACM_GSA_NAME}@${PLATFORM_PROJECT_ID}.iam.gserviceaccount.com"
+
+gcloud iam service-accounts create ${ABM_ACM_GSA_NAME}
+
+gcloud projects add-iam-policy-binding ${PLATFORM_PROJECT_ID} \
+  --member serviceAccount:${ABM_ACM_GSA} \
+  --role roles/source.reader
+
+gcloud iam service-accounts add-iam-policy-binding \
+   --role roles/iam.workloadIdentityUser \
+   --member "serviceAccount:${PLATFORM_PROJECT_ID}.svc.id.goog[config-management-system/root-reconciler]" \
+   ${ABM_ACM_GSA}
+
+
+ACM_SOURCE_REPOSITORY="https://source.developers.google.com/p/${PLATFORM_PROJECT_ID}/r/acm"
 
 if [ ! -d ${ACM_REPO_DIRECTORY} ]; then
     title_no_wait "Create the Anthos Config Management(ACM) Cloud Source Repositories(CSR) repository"
@@ -49,21 +63,6 @@ bold_no_wait "ACM Repository: https://source.cloud.google.com/${PLATFORM_PROJECT
 bold_no_wait "=============================================================================================================="
 echo
 
-GCP_ACCOUNT=$(gcloud config list account --format "value(core.account)")
-
-if [ ! -f ${SCM_SSH_KEY} ]; then
-    title_no_wait "Generate SSH key for ACM git access"
-    print_and_execute "ssh-keygen -C acm -f ${SCM_SSH_KEY} -P '' -t rsa"
-fi
-
-echo
-echo "SSH public key:"; cat ${SCM_SSH_KEY}.pub
-echo
-bold_no_wait "=============================================================================="
-bold_no_wait "Add the SSH key at https://source.cloud.google.com/user/ssh_keys?register=true"
-bold_no_wait "=============================================================================="
-bold_and_wait "When the key has been added"
-
 title_no_wait "Enabling the ACM feature"
 print_and_execute "gcloud services enable --project ${PLATFORM_PROJECT_ID} anthos.googleapis.com anthosconfigmanagement.googleapis.com"
 print_and_execute "gcloud beta container hub config-management enable --project=${PLATFORM_PROJECT_ID}"
@@ -80,19 +79,14 @@ spec:
   configSync:
     enabled: true
     sourceFormat: hierarchy
-    syncRepo: ssh://${GCP_ACCOUNT}@${ACM_SOURCE_REPOSITORY}
+    syncRepo: ${ACM_SOURCE_REPOSITORY}
     syncBranch: main
-    secretType: ssh
+    secretType: gcpserviceaccount
+    gcpServiceAccountEmail: ${ABM_ACM_GSA}
     policyDir: .
   policyController:
     enabled: true
 EOF
-    bold_no_wait "Create the config-management-system namespace"
-    print_and_execute "kubectl --context=${cluster_name} create namespace config-management-system"
-
-    bold_no_wait "Create git-creds secret"
-    print_and_execute "kubectl --context=${cluster_name} create secret generic git-creds --namespace=config-management-system --from-file=ssh=${SCM_SSH_KEY}"
-
     bold_no_wait "Apply the apply-spec.yaml"
     print_and_execute "gcloud beta container hub config-management apply --membership=${cluster_name} --config=${TEMP_DIR}/apply-spec.yaml --project=${PLATFORM_PROJECT_ID}"
 done
