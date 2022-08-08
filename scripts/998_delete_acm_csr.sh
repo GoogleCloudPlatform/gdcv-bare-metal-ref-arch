@@ -24,6 +24,12 @@ fi
 title_no_wait "Deleteting ACM CSR"
 print_and_execute "gcloud source repos delete acm --project ${PLATFORM_PROJECT_ID} --quiet"
 
+ABM_ACM_GSA_NAME="anthos-config-mgmt"
+ABM_ACM_GSA="${ABM_ACM_GSA_NAME}@${PLATFORM_PROJECT_ID}.iam.gserviceaccount.com"
+
+title_no_wait "Delete ${ABM_ACM_GSA_NAME} GSA"
+print_and_execute "gcloud iam service-accounts delete ${ABM_ACM_GSA} --quiet"
+
 check_local_error
 total_runtime
 exit ${local_error}
