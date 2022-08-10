@@ -8,10 +8,10 @@ See the [Logging into gcloud](https://cloud.google.com/anthos/clusters/docs/bare
 
 The following quota limits are required in the PLATFORM_PROJECT_ID project to provision all of the instances with the default configuration:
 
-| Service            | Limit name      | Dimensions (e.g location) | Limit |
-|--------------------|-----------------|---------------------------|-------|
-| Compute Engine API | N2 CPUs         | region: us-central1       | 100   |
-| Compute Engine API | N2 CPUs         | region: us-west1          | 96    |
+| Service            | Limit name | Dimensions (e.g location) | Limit |
+| ------------------ | ---------- | ------------------------- | ----- |
+| Compute Engine API | N2 CPUs    | region: us-central1       | 100   |
+| Compute Engine API | N2 CPUs    | region: us-west1          | 96    |
 
 ## Prepare Cloud Shell
 
@@ -48,7 +48,7 @@ The following quota limits are required in the PLATFORM_PROJECT_ID project to pr
    ```
    export ABM_ADDITIONAL_CONF=gce
    export KUSTOMIZATION_TYPE=hybrid-manual-lb
-   ```   
+   ```
 1. **[Cloud Shell]** Change directory into `anthos-bare-metal-ref-arch`
    ```
    cd anthos-bare-metal-ref-arch
@@ -110,7 +110,7 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ```
    export ABM_ADDITIONAL_CONF=gce
    export KUSTOMIZATION_TYPE=hybrid-manual-lb
-   ```   
+   ```
 1. **[Admin Host]** Change directory into `anthos-bare-metal-ref-arch`
    ```
    cd anthos-bare-metal-ref-arch
@@ -185,13 +185,6 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ${ABM_WORK_DIR}/scripts/005_create_clusters.sh
    ```
 
-## Create the ingress load balancers
-
-1. **[Admin Host]** Create the ingress load balancer
-   ```
-   ${ABM_WORK_DIR}/scripts/gcp/lb-proxy/004_create_ingress_lb.sh
-   ```
-
 ## Configure Connect Gateway
 
 1. Connect to the administrative host
@@ -201,6 +194,13 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ```
 1. Open the URL provided by the script
 1. Verify that all clusters show healthy
+
+## Create the ingress load balancers
+
+1. **[Admin Host]** Create the ingress load balancer
+   ```
+   ${ABM_WORK_DIR}/scripts/gcp/lb-proxy/004_create_ingress_lb.sh
+   ```
 
 ## Configure Anthos Config Management(ACM)
 
@@ -225,10 +225,13 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ${ABM_WORK_DIR}/scripts/009_setup_asm.sh
    ```
 1. **[Admin Host]** Verify ASM
+
    ```
    ${ABM_WORK_DIR}/scripts/010_verify_asm.sh
    ```
+
    **Verify the following**:
+
    - Deployments and Pods are READY.
 
 1. **[Admin Host]** Create the ASM load balancer

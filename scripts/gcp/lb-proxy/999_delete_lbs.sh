@@ -72,6 +72,10 @@ for cluster_name in $(get_cluster_names); do
     bold_no_wait "Deleting address '${address_name}'"
     print_and_execute "gcloud compute addresses delete --project=${PLATFORM_PROJECT_ID} --quiet ${address_name} --global"
 
+    health_check_name=${cluster_name}-asm-lb-health-check
+    bold_no_wait "Deleting health check '${health_check_name}'"
+    print_and_execute "gcloud compute health-checks delete --project=${PLATFORM_PROJECT_ID} --quiet ${health_check_name}"
+
     title_no_wait "Deleting the ingress load balancer"
 
     firewall_rule_name=allow-${cluster_name}-ingress-proxy-and-health-check 
@@ -118,6 +122,10 @@ for cluster_name in $(get_cluster_names); do
     bold_no_wait "Deleting address '${address_name}'"
     print_and_execute "gcloud compute addresses delete --project=${PLATFORM_PROJECT_ID} --quiet ${address_name} --global"
 
+    health_check_name=${cluster_name}-ingress-lb-health-check
+    bold_no_wait "Deleting health check '${health_check_name}'"
+    print_and_execute "gcloud compute health-checks delete --project=${PLATFORM_PROJECT_ID} --quiet ${health_check_name}"
+
     title_no_wait "Deleting the control plane load balancer"
 
     forwarding_rule_name=${cluster_name}-cp-forwarding-rule
@@ -140,14 +148,6 @@ for cluster_name in $(get_cluster_names); do
     bold_no_wait "Deleting address '${address_name}'"
     print_and_execute "gcloud compute addresses delete --project=${PLATFORM_PROJECT_ID} --quiet ${address_name} --global"
 done
-
-health_check_name=abm-asm-lb-health-check
-bold_no_wait "Deleting TCP health check '${health_check_name}'"
-print_and_execute "gcloud compute health-checks delete --project=${PLATFORM_PROJECT_ID} --quiet ${health_check_name}"
-
-health_check_name=abm-ingress-lb-health-check
-bold_no_wait "Deleting TCP health check '${health_check_name}'"
-print_and_execute "gcloud compute health-checks delete --project=${PLATFORM_PROJECT_ID} --quiet ${health_check_name}"
 
 health_check_name=abm-cp-lb-health-check
 bold_no_wait "Deleting HTTPS health check '${health_check_name}'"

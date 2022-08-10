@@ -17,10 +17,6 @@
 LOG_FILE_PREFIX=gcp-lb-
 source ${ABM_WORK_DIR}/scripts/helpers/include.sh
 
-health_check_name=abm-ingress-lb-health-check
-title_no_wait "Creating TCP health check '${health_check_name}'"
-print_and_execute "gcloud compute health-checks create tcp ${health_check_name} --project=${PLATFORM_PROJECT_ID} --use-serving-port"
-
 export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do
     title_no_wait "Creating the ingress load balancer for ${cluster_name}"
@@ -40,6 +36,8 @@ for cluster_name in $(get_cluster_names); do
     echo "HTTP:  ${http_node_port}"
     https_node_port=$(kubectl --context=${cluster_name} --namespace ${INGRESS_NAMESPACE} get service/istio-ingress --output jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
     echo "HTTPS: ${https_node_port}"
+    status_node_port=$(kubectl --context=${cluster_name} --namespace ${INGRESS_NAMESPACE} get service/istio-ingress --output jsonpath='{.spec.ports[?(@.name=="status-port")].nodePort}')
+    echo "status: ${status_node_port}"
 
     address=$(gcloud compute addresses describe ${address_name} --project=${PLATFORM_PROJECT_ID} --global --format "value(address)")
     bold_no_wait "Patching the istio-ingress service for external IP '${address}'"
@@ -62,7 +60,7 @@ EOF
     firewall_rule_name=allow-${cluster_name}-ingress-proxy-and-health-check 
     firewall_rule_tag=${cluster_name}-ingress-lb
     title_no_wait "Creating the firewall rule '${firewall_rule_name}' with tags '${firewall_rule_tag}'"
-    print_and_execute "gcloud compute firewall-rules create ${firewall_rule_name} --project ${NETWORK_PROJECT_ID} --allow tcp:${http_node_port},tcp:${https_node_port} --source-ranges 130.211.0.0/22,35.191.0.0/16 --target-tags ${firewall_rule_tag}"
+    print_and_execute "gcloud compute firewall-rules create ${firewall_rule_name} --project ${NETWORK_PROJECT_ID} --allow tcp:${http_node_port},tcp:${https_node_port},tcp:${status_node_port} --source-ranges 130.211.0.0/22,35.191.0.0/16 --target-tags ${firewall_rule_tag}"
     
     for cp in $(seq 1 $(get_number_of_control_plane_nodes)); do
         hostname="${cluster_name}-cp-${cp}"
@@ -76,6 +74,10 @@ EOF
         bold_no_wait "Adding tag ${firewall_rule_tag} to ${hostname}"
         print_and_execute "gcloud compute instances add-tags ${hostname} --project=${PLATFORM_PROJECT_ID} --zone=${ZONE} --tags=${firewall_rule_tag}"
     done
+
+    health_check_name=${cluster_name}-ingress-lb-health-check
+    title_no_wait "Creating health check '${health_check_name}'"
+    print_and_execute "gcloud compute health-checks create http ${health_check_name} --project ${PLATFORM_PROJECT_ID} --port=${status_node_port} --request-path=/healthz/ready"
 
     backend_80_name=${cluster_name}-ingress-80-lb
     bold_no_wait "Creating backend '${backend_80_name}'"
