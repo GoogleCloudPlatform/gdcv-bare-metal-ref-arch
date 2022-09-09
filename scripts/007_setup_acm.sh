@@ -14,41 +14,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-TEMP_DIR=${ABM_WORK_DIR}/tmp
+TEMP_DIR=${ABMRA_WORK_DIR}/tmp
 mkdir -p ${TEMP_DIR}
 
 ABM_ACM_GSA_NAME="anthos-config-mgmt"
-ABM_ACM_GSA="${ABM_ACM_GSA_NAME}@${PLATFORM_PROJECT_ID}.iam.gserviceaccount.com"
+ABM_ACM_GSA="${ABM_ACM_GSA_NAME}@${ABMRA_PLATFORM_PROJECT_ID}.iam.gserviceaccount.com"
 
 gcloud iam service-accounts create ${ABM_ACM_GSA_NAME}
 
-gcloud projects add-iam-policy-binding ${PLATFORM_PROJECT_ID} \
+gcloud projects add-iam-policy-binding ${ABMRA_PLATFORM_PROJECT_ID} \
   --member serviceAccount:${ABM_ACM_GSA} \
   --role roles/source.reader
 
 gcloud iam service-accounts add-iam-policy-binding \
    --role roles/iam.workloadIdentityUser \
-   --member "serviceAccount:${PLATFORM_PROJECT_ID}.svc.id.goog[config-management-system/root-reconciler]" \
+   --member "serviceAccount:${ABMRA_PLATFORM_PROJECT_ID}.svc.id.goog[config-management-system/root-reconciler]" \
    ${ABM_ACM_GSA}
 
 
-ACM_SOURCE_REPOSITORY="https://source.developers.google.com/p/${PLATFORM_PROJECT_ID}/r/acm"
+ACM_SOURCE_REPOSITORY="https://source.developers.google.com/p/${ABMRA_PLATFORM_PROJECT_ID}/r/acm"
 
-if [ ! -d ${ACM_REPO_DIRECTORY} ]; then
-    title_no_wait "Create the Anthos Config Management(ACM) Cloud Source Repositories(CSR) repository"
+if [ ! -d ${ABMRA_ACM_REPO_DIR} ]; then
+    echo_title "Create the Anthos Config Management(ACM) Cloud Source Repositories(CSR) repository"
     
-    bold_no_wait "Enable sourcerepo.googleapis.com API"
-    print_and_execute "gcloud services enable sourcerepo.googleapis.com --project ${PLATFORM_PROJECT_ID}"
+    echo_bold "Enable sourcerepo.googleapis.com API"
+    print_and_execute "gcloud services enable sourcerepo.googleapis.com --project ${ABMRA_PLATFORM_PROJECT_ID}"
     
-    bold_no_wait "Create the repository"
-    print_and_execute "gcloud source repos create acm --project ${PLATFORM_PROJECT_ID}"
+    echo_bold "Create the repository"
+    print_and_execute "gcloud source repos create acm --project ${ABMRA_PLATFORM_PROJECT_ID}"
     
-    bold_no_wait "Initialize the repository"
-    print_and_execute "gcloud source repos clone --project ${PLATFORM_PROJECT_ID} acm ${ACM_REPO_DIRECTORY}"
-    print_and_execute "cp -a ${ABM_WORK_DIR}/starter_repos/acm/. ${ACM_REPO_DIRECTORY}/"
-    cd ${ACM_REPO_DIRECTORY}
+    echo_bold "Initialize the repository"
+    print_and_execute "gcloud source repos clone --project ${ABMRA_PLATFORM_PROJECT_ID} acm ${ABMRA_ACM_REPO_DIR}"
+    print_and_execute "cp -a ${ABMRA_WORK_DIR}/starter_repos/acm/. ${ABMRA_ACM_REPO_DIR}/"
+    cd ${ABMRA_ACM_REPO_DIR}
     git checkout -b main
     git config user.email "acm@anthos"
     git config user.name "ACM"
@@ -58,21 +58,21 @@ if [ ! -d ${ACM_REPO_DIRECTORY} ]; then
 fi
 
 echo
-bold_no_wait "=============================================================================================================="
-bold_no_wait "ACM Repository: https://source.cloud.google.com/${PLATFORM_PROJECT_ID}/acm/+/main:"
-bold_no_wait "=============================================================================================================="
+echo_bold "=============================================================================================================="
+echo_bold "ACM Repository: https://source.cloud.google.com/${ABMRA_PLATFORM_PROJECT_ID}/acm/+/main:"
+echo_bold "=============================================================================================================="
 echo
 
-title_no_wait "Enabling the ACM feature"
-print_and_execute "gcloud services enable --project ${PLATFORM_PROJECT_ID} anthos.googleapis.com anthosconfigmanagement.googleapis.com"
-print_and_execute "gcloud beta container hub config-management enable --project=${PLATFORM_PROJECT_ID}"
+echo_title "Enabling the ACM feature"
+print_and_execute "gcloud services enable --project ${ABMRA_PLATFORM_PROJECT_ID} anthos.googleapis.com anthosconfigmanagement.googleapis.com"
+print_and_execute "gcloud beta container hub config-management enable --project=${ABMRA_PLATFORM_PROJECT_ID}"
 
-print_and_execute "cd ${ABM_WORK_DIR}"
-export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
+print_and_execute "cd ${ABMRA_WORK_DIR}"
+export KUBECONFIG=$(ls -1 ${ABMRA_BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do    
-    title_no_wait "Deploy ACM on ${cluster_name}"
+    echo_title "Deploy ACM on ${cluster_name}"
     
-    bold_no_wait "Generate the apply-spec.yaml"
+    echo_bold "Generate the apply-spec.yaml"
     cat <<EOF > ${TEMP_DIR}/apply-spec.yaml
 applySpecVersion: 1
 spec:
@@ -87,12 +87,12 @@ spec:
   policyController:
     enabled: true
 EOF
-    bold_no_wait "Apply the apply-spec.yaml"
-    print_and_execute "gcloud beta container hub config-management apply --membership=${cluster_name} --config=${TEMP_DIR}/apply-spec.yaml --project=${PLATFORM_PROJECT_ID}"
+    echo_bold "Apply the apply-spec.yaml"
+    print_and_execute "gcloud beta container hub config-management apply --membership=${cluster_name} --config=${TEMP_DIR}/apply-spec.yaml --project=${ABMRA_PLATFORM_PROJECT_ID}"
 done
 
-title_no_wait "Waiting for ACM sync and install to complete"
-while [[ $(gcloud beta container hub config-management status --project=${PLATFORM_PROJECT_ID} --filter="(acm_status.config_sync!=SYNCED AND acm_status.config_sync!=INSTALLED)" 2>/dev/null | wc -l) != "0" ]]; do
+echo_title "Waiting for ACM sync and install to complete"
+while [[ $(gcloud beta container hub config-management status --project=${ABMRA_PLATFORM_PROJECT_ID} --filter="(acm_status.config_sync!=SYNCED AND acm_status.config_sync!=INSTALLED)" 2>/dev/null | wc -l) != "0" ]]; do
     sleep 5
 done
 

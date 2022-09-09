@@ -14,144 +14,144 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOG_FILE_PREFIX=gcp-lb-
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+ABMRA_LOG_FILE_PREFIX=gcp-lb-
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
 firewall_rule_name=allow-abm-cp-proxy-and-health-check 
-title_no_wait "Deleting the firewall rule '${firewall_rule_name}'"
-print_and_execute "gcloud compute firewall-rules delete --project=${NETWORK_PROJECT_ID} --quiet ${firewall_rule_name}"
+echo_title "Deleting the firewall rule '${firewall_rule_name}'"
+print_and_execute "gcloud compute firewall-rules delete --project=${ABMRA_NETWORK_PROJECT_ID} --quiet ${firewall_rule_name}"
 
 for cluster_name in $(get_cluster_names); do
     load_cluster_config ${cluster_name}
-    title_no_wait "Deleting the load balancers for '${cluster_name}'"
+    echo_title "Deleting the load balancers for '${cluster_name}'"
 
-    title_no_wait "Deleting the ASM load balancer"
+    echo_title "Deleting the ASM load balancer"
 
     firewall_rule_name=allow-${cluster_name}-asm-proxy-and-health-check 
     firewall_rule_tag=${cluster_name}-asm-lb
-    bold_no_wait "Deleting the firewall rule '${firewall_rule_name}'"
-    print_and_execute "gcloud compute firewall-rules delete --project=${NETWORK_PROJECT_ID} --quiet ${firewall_rule_name}"
+    echo_bold "Deleting the firewall rule '${firewall_rule_name}'"
+    print_and_execute "gcloud compute firewall-rules delete --project=${ABMRA_NETWORK_PROJECT_ID} --quiet ${firewall_rule_name}"
 
     forwarding_rule_name=${cluster_name}-asm-80-forwarding-rule
-    bold_no_wait "Deleting forwarding rule '${forwarding_rule_name}'"
-    print_and_execute "gcloud compute forwarding-rules delete --project=${PLATFORM_PROJECT_ID} --quiet ${forwarding_rule_name} --global"
+    echo_bold "Deleting forwarding rule '${forwarding_rule_name}'"
+    print_and_execute "gcloud compute forwarding-rules delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${forwarding_rule_name} --global"
 
     forwarding_rule_name=${cluster_name}-asm-443-forwarding-rule
-    bold_no_wait "Deleting forwarding rule '${forwarding_rule_name}'"
-    print_and_execute "gcloud compute forwarding-rules delete --project=${PLATFORM_PROJECT_ID} --quiet ${forwarding_rule_name} --global"
+    echo_bold "Deleting forwarding rule '${forwarding_rule_name}'"
+    print_and_execute "gcloud compute forwarding-rules delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${forwarding_rule_name} --global"
 
     http_proxy_name=${cluster_name}-asm-http-proxy
-    bold_no_wait "Deleting HTTP proxy '${http_proxy_name}'"
-    print_and_execute "gcloud compute target-http-proxies delete --project=${PLATFORM_PROJECT_ID} --quiet ${http_proxy_name}"
+    echo_bold "Deleting HTTP proxy '${http_proxy_name}'"
+    print_and_execute "gcloud compute target-http-proxies delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${http_proxy_name}"
 
     tcp_proxy_name=${cluster_name}-asm-tcp-proxy
-    bold_no_wait "Deleting TCP proxy '${tcp_proxy_name}'"
-    print_and_execute "gcloud compute target-tcp-proxies delete --project=${PLATFORM_PROJECT_ID} --quiet ${tcp_proxy_name}"
+    echo_bold "Deleting TCP proxy '${tcp_proxy_name}'"
+    print_and_execute "gcloud compute target-tcp-proxies delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${tcp_proxy_name}"
 
     url_map_name=${cluster_name}-asm-url-map
-    bold_no_wait "Deleting URL map '${url_map_name}'"
-    print_and_execute "gcloud compute url-maps delete --project=${PLATFORM_PROJECT_ID} --quiet  ${url_map_name}"
+    echo_bold "Deleting URL map '${url_map_name}'"
+    print_and_execute "gcloud compute url-maps delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet  ${url_map_name}"
 
     backend_80_name=${cluster_name}-asm-80-lb
-    bold_no_wait "Deleting backend '${backend_80_name}'"
-    print_and_execute "gcloud compute backend-services delete --project=${PLATFORM_PROJECT_ID} --quiet ${backend_80_name} --global"
+    echo_bold "Deleting backend '${backend_80_name}'"
+    print_and_execute "gcloud compute backend-services delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${backend_80_name} --global"
 
     backend_443_name=${cluster_name}-asm-443-lb
-    bold_no_wait "Deleting backend '${backend_443_name}'"
-    print_and_execute "gcloud compute backend-services delete --project=${PLATFORM_PROJECT_ID} --quiet ${backend_443_name} --global"
+    echo_bold "Deleting backend '${backend_443_name}'"
+    print_and_execute "gcloud compute backend-services delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${backend_443_name} --global"
 
     neg_80_name=${cluster_name}-asm-80-neg
-    bold_no_wait "Deleting network endpoint group '${neg_80_name}'"
-    print_and_execute "gcloud compute network-endpoint-groups delete --project=${PLATFORM_PROJECT_ID} --quiet ${neg_80_name} --zone=${ZONE}"
+    echo_bold "Deleting network endpoint group '${neg_80_name}'"
+    print_and_execute "gcloud compute network-endpoint-groups delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${neg_80_name} --zone=${ZONE}"
 
     neg_443_name=${cluster_name}-asm-443-neg
-    bold_no_wait "Deleting network endpoint group '${neg_443_name}'"
-    print_and_execute "gcloud compute network-endpoint-groups delete --project=${PLATFORM_PROJECT_ID} --quiet ${neg_443_name} --zone=${ZONE}"
+    echo_bold "Deleting network endpoint group '${neg_443_name}'"
+    print_and_execute "gcloud compute network-endpoint-groups delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${neg_443_name} --zone=${ZONE}"
 
     address_name=${cluster_name}-asm-address
-    bold_no_wait "Deleting address '${address_name}'"
-    print_and_execute "gcloud compute addresses delete --project=${PLATFORM_PROJECT_ID} --quiet ${address_name} --global"
+    echo_bold "Deleting address '${address_name}'"
+    print_and_execute "gcloud compute addresses delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${address_name} --global"
 
     health_check_name=${cluster_name}-asm-lb-health-check
-    bold_no_wait "Deleting health check '${health_check_name}'"
-    print_and_execute "gcloud compute health-checks delete --project=${PLATFORM_PROJECT_ID} --quiet ${health_check_name}"
+    echo_bold "Deleting health check '${health_check_name}'"
+    print_and_execute "gcloud compute health-checks delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${health_check_name}"
 
-    title_no_wait "Deleting the ingress load balancer"
+    echo_title "Deleting the ingress load balancer"
 
     firewall_rule_name=allow-${cluster_name}-ingress-proxy-and-health-check 
-    bold_no_wait "Deleting the firewall rule '${firewall_rule_name}'"
-    print_and_execute "gcloud compute firewall-rules delete --project=${NETWORK_PROJECT_ID} --quiet ${firewall_rule_name}"
+    echo_bold "Deleting the firewall rule '${firewall_rule_name}'"
+    print_and_execute "gcloud compute firewall-rules delete --project=${ABMRA_NETWORK_PROJECT_ID} --quiet ${firewall_rule_name}"
 
     forwarding_rule_name=${cluster_name}-ingress-80-forwarding-rule
-    bold_no_wait "Deleting forwarding rule '${forwarding_rule_name}'"
-    print_and_execute "gcloud compute forwarding-rules delete --project=${PLATFORM_PROJECT_ID} --quiet ${forwarding_rule_name} --global"
+    echo_bold "Deleting forwarding rule '${forwarding_rule_name}'"
+    print_and_execute "gcloud compute forwarding-rules delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${forwarding_rule_name} --global"
 
     forwarding_rule_name=${cluster_name}-ingress-443-forwarding-rule
-    bold_no_wait "Deleting forwarding rule '${forwarding_rule_name}'"
-    print_and_execute "gcloud compute forwarding-rules delete --project=${PLATFORM_PROJECT_ID} --quiet ${forwarding_rule_name} --global"
+    echo_bold "Deleting forwarding rule '${forwarding_rule_name}'"
+    print_and_execute "gcloud compute forwarding-rules delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${forwarding_rule_name} --global"
 
     http_proxy_name=${cluster_name}-ingress-http-proxy
-    bold_no_wait "Deleting HTTP proxy '${http_proxy_name}'"
-    print_and_execute "gcloud compute target-http-proxies delete --project=${PLATFORM_PROJECT_ID} --quiet ${http_proxy_name}"
+    echo_bold "Deleting HTTP proxy '${http_proxy_name}'"
+    print_and_execute "gcloud compute target-http-proxies delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${http_proxy_name}"
 
     tcp_proxy_name=${cluster_name}-ingress-tcp-proxy
-    bold_no_wait "Deleting TCP proxy '${tcp_proxy_name}'"
-    print_and_execute "gcloud compute target-tcp-proxies delete --project=${PLATFORM_PROJECT_ID} --quiet ${tcp_proxy_name}"
+    echo_bold "Deleting TCP proxy '${tcp_proxy_name}'"
+    print_and_execute "gcloud compute target-tcp-proxies delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${tcp_proxy_name}"
 
     url_map_name=${cluster_name}-ingress-url-map
-    bold_no_wait "Deleting URL map '${url_map_name}'"
-    print_and_execute "gcloud compute url-maps delete --project=${PLATFORM_PROJECT_ID} --quiet ${url_map_name}"
+    echo_bold "Deleting URL map '${url_map_name}'"
+    print_and_execute "gcloud compute url-maps delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${url_map_name}"
 
     backend_80_name=${cluster_name}-ingress-80-lb
-    bold_no_wait "Deleting backend '${backend_80_name}'"
-    print_and_execute "gcloud compute backend-services delete --project=${PLATFORM_PROJECT_ID} --quiet ${backend_80_name} --global"
+    echo_bold "Deleting backend '${backend_80_name}'"
+    print_and_execute "gcloud compute backend-services delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${backend_80_name} --global"
 
     backend_443_name=${cluster_name}-ingress-443-lb
-    bold_no_wait "Deleting backend '${backend_443_name}'"
-    print_and_execute "gcloud compute backend-services delete --project=${PLATFORM_PROJECT_ID} --quiet ${backend_443_name} --global"
+    echo_bold "Deleting backend '${backend_443_name}'"
+    print_and_execute "gcloud compute backend-services delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${backend_443_name} --global"
 
     neg_80_name=${cluster_name}-ingress-80-neg
-    bold_no_wait "Deleting network endpoint group '${neg_80_name}'"
-    print_and_execute "gcloud compute network-endpoint-groups delete --project=${PLATFORM_PROJECT_ID} --quiet ${neg_80_name} --zone=${ZONE}"
+    echo_bold "Deleting network endpoint group '${neg_80_name}'"
+    print_and_execute "gcloud compute network-endpoint-groups delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${neg_80_name} --zone=${ZONE}"
 
     neg_443_name=${cluster_name}-ingress-443-neg
-    bold_no_wait "Deleting network endpoint group '${neg_443_name}'"
-    print_and_execute "gcloud compute network-endpoint-groups delete --project=${PLATFORM_PROJECT_ID} --quiet ${neg_443_name} --zone=${ZONE}"
+    echo_bold "Deleting network endpoint group '${neg_443_name}'"
+    print_and_execute "gcloud compute network-endpoint-groups delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${neg_443_name} --zone=${ZONE}"
 
     address_name=${cluster_name}-ingress-address
-    bold_no_wait "Deleting address '${address_name}'"
-    print_and_execute "gcloud compute addresses delete --project=${PLATFORM_PROJECT_ID} --quiet ${address_name} --global"
+    echo_bold "Deleting address '${address_name}'"
+    print_and_execute "gcloud compute addresses delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${address_name} --global"
 
     health_check_name=${cluster_name}-ingress-lb-health-check
-    bold_no_wait "Deleting health check '${health_check_name}'"
-    print_and_execute "gcloud compute health-checks delete --project=${PLATFORM_PROJECT_ID} --quiet ${health_check_name}"
+    echo_bold "Deleting health check '${health_check_name}'"
+    print_and_execute "gcloud compute health-checks delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${health_check_name}"
 
-    title_no_wait "Deleting the control plane load balancer"
+    echo_title "Deleting the control plane load balancer"
 
     forwarding_rule_name=${cluster_name}-cp-forwarding-rule
-    bold_no_wait "Deleting forwarding rule '${forwarding_rule_name}'"
-    print_and_execute "gcloud compute forwarding-rules delete --project=${PLATFORM_PROJECT_ID} --quiet ${forwarding_rule_name} --global"
+    echo_bold "Deleting forwarding rule '${forwarding_rule_name}'"
+    print_and_execute "gcloud compute forwarding-rules delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${forwarding_rule_name} --global"
 
     tcp_proxy_name=${cluster_name}-cp-tcp-proxy
-    bold_no_wait "Deleting TCP proxy '${tcp_proxy_name}'"
-    print_and_execute "gcloud compute target-tcp-proxies delete --project=${PLATFORM_PROJECT_ID} --quiet ${tcp_proxy_name}"
+    echo_bold "Deleting TCP proxy '${tcp_proxy_name}'"
+    print_and_execute "gcloud compute target-tcp-proxies delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${tcp_proxy_name}"
 
     backend_name=${cluster_name}-cp-lb
-    bold_no_wait "Deleting backend '${backend_name}'"
-    print_and_execute "gcloud compute backend-services delete --project=${PLATFORM_PROJECT_ID} --quiet ${backend_name} --global"
+    echo_bold "Deleting backend '${backend_name}'"
+    print_and_execute "gcloud compute backend-services delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${backend_name} --global"
 
     neg_name=${cluster_name}-cp-neg
-    bold_no_wait "Deleting network endpoint group '${neg_name}'"
-    print_and_execute "gcloud compute network-endpoint-groups delete --project=${PLATFORM_PROJECT_ID} --quiet ${neg_name} --zone=${ZONE}"
+    echo_bold "Deleting network endpoint group '${neg_name}'"
+    print_and_execute "gcloud compute network-endpoint-groups delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${neg_name} --zone=${ZONE}"
 
     address_name=${cluster_name}-cp-address
-    bold_no_wait "Deleting address '${address_name}'"
-    print_and_execute "gcloud compute addresses delete --project=${PLATFORM_PROJECT_ID} --quiet ${address_name} --global"
+    echo_bold "Deleting address '${address_name}'"
+    print_and_execute "gcloud compute addresses delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${address_name} --global"
 done
 
 health_check_name=abm-cp-lb-health-check
-bold_no_wait "Deleting HTTPS health check '${health_check_name}'"
-print_and_execute "gcloud compute health-checks delete --project=${PLATFORM_PROJECT_ID} --quiet ${health_check_name}"
+echo_bold "Deleting HTTPS health check '${health_check_name}'"
+print_and_execute "gcloud compute health-checks delete --project=${ABMRA_PLATFORM_PROJECT_ID} --quiet ${health_check_name}"
 
 check_local_error
 total_runtime

@@ -14,43 +14,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-BIN_DIR=${ABM_WORK_DIR}/bin
-ASMCLI_BIN=${BIN_DIR}/asmcli_${ASM_VERSION_MAJOR}.${ASM_VERSION_MINOR}
+BIN_DIR=${ABMRA_WORK_DIR}/bin
+ASMCLI_BIN=${BIN_DIR}/asmcli_${ABMRA_ASM_VERSION_MAJOR}.${ABMRA_ASM_VERSION_MINOR}
 mkdir -p ${BIN_DIR}
 
-title_no_wait "Download asmcli"
-print_and_execute "curl --location --output ${ASMCLI_BIN} --show-error --silent https://storage.googleapis.com/csm-artifacts/asm/asmcli_${ASM_VERSION_MAJOR}.${ASM_VERSION_MINOR}"
+echo_title "Download asmcli"
+print_and_execute "curl --location --output ${ASMCLI_BIN} --show-error --silent https://storage.googleapis.com/csm-artifacts/asm/asmcli_${ABMRA_ASM_VERSION_MAJOR}.${ABMRA_ASM_VERSION_MINOR}"
 print_and_execute "chmod u+x ${ASMCLI_BIN}"
 
-export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
+export KUBECONFIG=$(ls -1 ${ABMRA_BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do
     load_cluster_config ${cluster_name}
 
-    kubeconfig_file=${BMCTL_WORKSPACE_DIR}/${cluster_name}/${cluster_name}-kubeconfig
+    kubeconfig_file=${ABMRA_BMCTL_WORKSPACE_DIR}/${cluster_name}/${cluster_name}-kubeconfig
 
-    temp_dir=${ABM_WORK_DIR}/tmp/${cluster_name}
+    temp_dir=${ABMRA_WORK_DIR}/tmp/${cluster_name}
     mkdir -p ${temp_dir}
 
     output_dir=${temp_dir}/asmcli
     rm -rf ${output_dir}
 
-    export MAJOR=${ASM_VERSION_MAJOR}
-    export MINOR=${ASM_VERSION_MINOR}
-    export POINT=${ASM_VERSION_POINT}
-    export REV=${ASM_VERSION_REV}
-    export CONFIG_VER=${ASM_VERSION_CONFIG}
+    export MAJOR=${ABMRA_ASM_VERSION_MAJOR}
+    export MINOR=${ABMRA_ASM_VERSION_MINOR}
+    export POINT=${ABMRA_ASM_VERSION_POINT}
+    export REV=${ABMRA_ASM_VERSION_REV}
+    export CONFIG_VER=${ABMRA_ASM_VERSION_CONFIG}
 
     unset CLUSTER_NAME
    
-    title_no_wait "Installing Anthos Service Mesh (ASM) v${MAJOR}.${MINOR}.${POINT}-asm.${REV} on ${cluster_name}"
-    print_and_execute "${ASMCLI_BIN} install --fleet_id ${PLATFORM_PROJECT_ID} --kubeconfig ${kubeconfig_file} --network_id ${cluster_name}-net --output_dir ${output_dir} --platform multicloud --enable_all --ca mesh_ca"
+    echo_title "Installing Anthos Service Mesh (ASM) v${MAJOR}.${MINOR}.${POINT}-asm.${REV} on ${cluster_name}"
+    print_and_execute "${ASMCLI_BIN} install --fleet_id ${ABMRA_PLATFORM_PROJECT_ID} --kubeconfig ${kubeconfig_file} --network_id ${cluster_name}-net --output_dir ${output_dir} --platform multicloud --enable_all --ca mesh_ca"
 
-    bold_no_wait "Create ingressgateway in '${ASM_GATEWAY_NAMESPACE}' namespace"
-    print_and_execute "kubectl --context ${cluster_name} create namespace ${ASM_GATEWAY_NAMESPACE}"
-    print_and_execute "kubectl --context ${cluster_name} label namespace ${ASM_GATEWAY_NAMESPACE} istio-injection- istio.io/rev=${ASM_REV_LABEL} --overwrite"
-    print_and_execute "kubectl --context ${cluster_name} --namespace ${ASM_GATEWAY_NAMESPACE} apply --filename ${output_dir}/samples/gateways/istio-ingressgateway"
+    echo_bold "Create ingressgateway in '${ABMRA_ASM_INGRESSGATEWAY_NAMESPACE}' namespace"
+    print_and_execute "kubectl --context ${cluster_name} create namespace ${ABMRA_ASM_INGRESSGATEWAY_NAMESPACE}"
+    print_and_execute "kubectl --context ${cluster_name} label namespace ${ABMRA_ASM_INGRESSGATEWAY_NAMESPACE} istio-injection- istio.io/rev=${ABMRA_ASM_REV_LABEL} --overwrite"
+    print_and_execute "kubectl --context ${cluster_name} --namespace ${ABMRA_ASM_INGRESSGATEWAY_NAMESPACE} apply --filename ${output_dir}/samples/gateways/istio-ingressgateway"
 done
 
 check_local_error

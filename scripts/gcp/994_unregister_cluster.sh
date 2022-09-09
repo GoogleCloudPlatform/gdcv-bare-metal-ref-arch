@@ -14,12 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOG_FILE_PREFIX=gcp-
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+ABMRA_LOG_FILE_PREFIX=gcp-
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Unregister clusters"
+echo_title "Unregister clusters"
 for cluster_name in $(get_cluster_names); do   
-    print_and_execute "gcloud container hub memberships delete --quiet ${cluster_name}"
+    print_and_execute "gcloud container hub memberships delete ${cluster_name} --project ${ABMRA_PLATFORM_PROJECT_ID} --quiet"
 done
 
 check_local_error

@@ -14,23 +14,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Enable shared-vpc in '${NETWORK_PROJECT_ID}'"
-print_and_execute "gcloud services enable --project ${NETWORK_PROJECT_ID} compute.googleapis.com"
-print_and_execute "gcloud compute shared-vpc enable ${NETWORK_PROJECT_ID}"
+#The roles/compute.xpnAdmin IAM policy is required
 
-title_no_wait "Associate '${PLATFORM_PROJECT_ID}' with '${NETWORK_PROJECT_ID}'"
-print_and_execute "gcloud services enable --project ${PLATFORM_PROJECT_ID} compute.googleapis.com"
-print_and_execute "gcloud compute firewall-rules delete --project ${PLATFORM_PROJECT_ID} --quiet default-allow-icmp default-allow-internal default-allow-rdp default-allow-ssh"
-print_and_execute "gcloud compute networks delete --project ${PLATFORM_PROJECT_ID} --quiet default"
-print_and_execute "gcloud compute shared-vpc associated-projects add ${PLATFORM_PROJECT_ID} --host-project ${NETWORK_PROJECT_ID}"
+#user_account=$(gcloud auth list --filter=status:ACTIVE --format="value(account)")
+#echo_title "Adding the roles/compute.xpnAdmin IAM policy bindings for ${user_account}"
+#print_and_execute "gcloud projects add-iam-policy-binding ${ABMRA_PLATFORM_PROJECT_ID} --member 'user:${user_account}' --role 'roles/compute.xpnAdmin'"
 
-title_no_wait "Associate '${APP_PROJECT_ID}' with '${NETWORK_PROJECT_ID}'"
-print_and_execute "gcloud services enable --project ${APP_PROJECT_ID} --quiet compute.googleapis.com"
-print_and_execute "gcloud compute firewall-rules delete --project ${APP_PROJECT_ID} --quiet default-allow-icmp default-allow-internal default-allow-rdp default-allow-ssh"
-print_and_execute "gcloud compute networks delete --project ${APP_PROJECT_ID} --quiet default"
-print_and_execute "gcloud compute shared-vpc associated-projects add ${APP_PROJECT_ID} --host-project ${NETWORK_PROJECT_ID}"
+if [ ${ABMRA_USE_SHARED_VPC,,} == "true" ]; then
+    echo_title "Enable shared-vpc in '${ABMRA_NETWORK_PROJECT_ID}'"
+    print_and_execute "gcloud services enable --project ${ABMRA_NETWORK_PROJECT_ID} compute.googleapis.com"
+    print_and_execute "gcloud compute shared-vpc enable ${ABMRA_NETWORK_PROJECT_ID}"
+
+    echo_title "Associate '${ABMRA_PLATFORM_PROJECT_ID}' with '${ABMRA_NETWORK_PROJECT_ID}'"
+    print_and_execute "gcloud services enable --project ${ABMRA_PLATFORM_PROJECT_ID} compute.googleapis.com"
+    print_and_execute "gcloud compute firewall-rules delete --project ${ABMRA_PLATFORM_PROJECT_ID} --quiet default-allow-icmp default-allow-internal default-allow-rdp default-allow-ssh"
+    print_and_execute "gcloud compute networks delete --project ${ABMRA_PLATFORM_PROJECT_ID} --quiet default"
+    print_and_execute "gcloud compute shared-vpc associated-projects add ${ABMRA_PLATFORM_PROJECT_ID} --host-project ${ABMRA_NETWORK_PROJECT_ID}"
+
+    echo_title "Associate '${ABMRA_APP_PROJECT_ID}' with '${ABMRA_NETWORK_PROJECT_ID}'"
+    print_and_execute "gcloud services enable --project ${ABMRA_APP_PROJECT_ID} --quiet compute.googleapis.com"
+    print_and_execute "gcloud compute firewall-rules delete --project ${ABMRA_APP_PROJECT_ID} --quiet default-allow-icmp default-allow-internal default-allow-rdp default-allow-ssh"
+    print_and_execute "gcloud compute networks delete --project ${ABMRA_APP_PROJECT_ID} --quiet default"
+    print_and_execute "gcloud compute shared-vpc associated-projects add ${ABMRA_APP_PROJECT_ID} --host-project ${ABMRA_NETWORK_PROJECT_ID}"
+else
+    echo_warning "ABMRA_USE_SHARED_VPC is not set to 'true', skipping Shared VPC creation!"
+fi
 
 check_local_error
 total_runtime

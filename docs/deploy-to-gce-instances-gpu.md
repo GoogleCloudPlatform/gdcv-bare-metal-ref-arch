@@ -6,14 +6,14 @@ See the [Logging into gcloud](https://cloud.google.com/anthos/clusters/docs/bare
 
 ### Quota
 
-The following quota limits are required in the PLATFORM_PROJECT_ID project to provision all of the instances with the default configuration:
+The following quota limits are required in the ABMRA_PLATFORM_PROJECT_ID project to provision all of the instances with the default configuration:
 
 | Service            | Limit name      | Dimensions (e.g location) | Limit |
 |--------------------|-----------------|---------------------------|-------|
 | Compute Engine API | NVIDIA V100 GPU | region: us-central1       | 6     |
 | Compute Engine API | NVIDIA V100 GPU | region: us-west1          | 6     |
-| Compute Engine API | CPUs            | region: us-central1       | 48    |
-| Compute Engine API | CPUs            | region: us-west1          | 48    |
+| Compute Engine API | CPUs (N1)       | region: us-central1       | 48    |
+| Compute Engine API | CPUs (N1)       | region: us-west1          | 48    |
 | Compute Engine API | N2 CPUs         | region: us-central1       | 52    |
 | Compute Engine API | N2 CPUs         | region: us-west1          | 48    |
 
@@ -31,27 +31,27 @@ The following quota limits are required in the PLATFORM_PROJECT_ID project to pr
 1. **[Cloud Shell]** Set the Organization ID or Folder ID where the projects will be created.
    > This step can be skipped if using existing projects.
    ```
-   export ORGANIZATION_ID=
+   export ABMRA_ORGANIZATION_ID=
    ```
    **OR**
    ```
-   export FOLDER_ID=
+   export ABMRA_FOLDER_ID=
    ```
 1. **[Cloud Shell]** Set the Billing Account ID of the Billing Account for the new projects.
    > This step can be skipped if using existing projects.
    ```
-   export BILLING_ACCOUNT_ID=
+   export ABMRA_BILLING_ACCOUNT_ID=
    ```
 1. **[Cloud Shell]** Set the Project IDs for the new or existing projects, if not set the following defaults will be used:
    ```
-   export NETWORK_PROJECT_ID=project-0-net-prod
-   export PLATFORM_PROJECT_ID=project-1-platform-prod
-   export APP_PROJECT_ID=project-2-bofa-prod
+   export ABMRA_NETWORK_PROJECT_ID=project-0-net-prod
+   export ABMRA_PLATFORM_PROJECT_ID=project-1-platform-prod
+   export ABMRA_APP_PROJECT_ID=project-2-bofa-prod
    ```
 1. **[Cloud Shell]** Enable additional configuration for GCE with VXLAN:
    ```
-   export ABM_ADDITIONAL_CONF=gce-gpu
-   export KUSTOMIZATION_TYPE=hybrid-manual-lb
+   export ABMRA_BASE_CONF=hybrid-manual-lb
+   export ABMRA_ADDITIONAL_CONF=gce-gpu
    ```   
 1. **[Cloud Shell]** Change directory into `anthos-bare-metal-ref-arch`
    ```
@@ -71,25 +71,29 @@ The following quota limits are required in the PLATFORM_PROJECT_ID project to pr
 1. Open Cloud Shell
 1. **[Cloud Shell]** Create the GCP projects
    ```
-   ${ABM_WORK_DIR}/scripts/002_create_gcp_projects.sh
+   ${ABMRA_WORK_DIR}/scripts/002_create_gcp_projects.sh
    ```
 
 ## Create the Shared VPC
 
-To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared VPC Admin` role is required for the organization or folder.
+To create the Shared VPC in the ABMRA_NETWORK_PROJECT_ID project, the `Compute Shared VPC Admin` role is required for the organization or folder.
 
 1. Open Cloud Shell
 1. **[Cloud Shell]** Create the Shared VPC
    ```
-   ${ABM_WORK_DIR}/scripts/003_create_shared_vpc.sh
+   ${ABMRA_WORK_DIR}/scripts/003_create_shared_vpc.sh
    ```
 
 ## Create the administrative host
 
 1. Open Cloud Shell
+1. **[Cloud Shell]** Generate the conf files
+   ```
+   ${ABMRA_WORK_DIR}/scripts/000_generate_conf_files.sh
+   ```
 1. **[Cloud Shell]** Create the administrative host
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/001_create_admin_instance.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/001_create_admin_instance.sh
    ```
 
 ## Prepare the administrative host
@@ -98,7 +102,7 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    - Preferred SSH client
    - CloudShell:
      ```
-     gcloud compute ssh --project ${PLATFORM_PROJECT_ID} --zone=us-central1-a bare-metal-admin-1
+     gcloud compute ssh --project ${ABMRA_PLATFORM_PROJECT_ID} --zone=us-central1-a bare-metal-admin-1
      ```
 1. **[Admin Host]** Clone this project to the administrative host
    ```
@@ -106,14 +110,14 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ```
 1. **[Admin Host]** Set the Project IDs for the projects, these should match the value entered above.
    ```
-   export NETWORK_PROJECT_ID=project-0-net-prod
-   export PLATFORM_PROJECT_ID=project-1-platform-prod
-   export APP_PROJECT_ID=project-2-bofa-prod
+   export ABMRA_NETWORK_PROJECT_ID=project-0-net-prod
+   export ABMRA_PLATFORM_PROJECT_ID=project-1-platform-prod
+   export ABMRA_APP_PROJECT_ID=project-2-bofa-prod
    ```
 1. **[Admin Host]** Enable additional configuration for GCE with VXLAN
    ```
-   export ABM_ADDITIONAL_CONF=gce-gpu
-   export KUSTOMIZATION_TYPE=hybrid-manual-lb
+   export ABMRA_BASE_CONF=hybrid-manual-lb
+   export ABMRA_ADDITIONAL_CONF=gce-gpu
    ```   
 1. **[Admin Host]** Change directory into `anthos-bare-metal-ref-arch`
    ```
@@ -127,9 +131,13 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    ```
    source ./scripts/vars.sh
    ```
+1. **[Admin Host]** Generate the conf files
+   ```
+   ${ABMRA_WORK_DIR}/scripts/000_generate_conf_files.sh
+   ```
 1. **[Admin Host]** Prepare the administrative host
    ```
-   ./scripts/001_prepare_admin_host.sh
+   ${ABMRA_WORK_DIR}/scripts/001_prepare_admin_host.sh
    ```
 1. **[Admin Host]** Logout, the new shell configurations will take effect on next login.
    ```
@@ -146,15 +154,15 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
    > **NOTE**: If you get an error message such as: ` gcloud: command not found` or `-bash: /snap/bin/gcloud: No such file or directory`, logout to activate the shell configuration changes.
 1. **[Admin Host]** Create the GCE cluster instances
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/002_create_cluster_instances.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/002_create_cluster_instances.sh
    ```
-1. **[Admin Host]** Distribute the `DEPLOYMENT_USER` SSH key
+1. **[Admin Host]** Distribute the `ABMRA_DEPLOYMENT_USER` SSH key
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/003_distribute_ssh_keys.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/003_distribute_ssh_keys.sh
    ```
-1. **[Admin Host]** Validate the `DEPLOYMENT_USER` settings
+1. **[Admin Host]** Validate the `ABMRA_DEPLOYMENT_USER` settings
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/004_validate_deployment_user.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/004_validate_deployment_user.sh
    ```
 
 ## Create the control plane load balancers
@@ -162,11 +170,11 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 1. Connect to the administrative host
 1. **[Admin Host]** Create the control plane load balancer
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/lb-proxy/001_create_cp_lb.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/lb-proxy/001_create_cp_lb.sh
    ```
 1. **[Admin Host]** Create the ingress load balancer address
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/lb-proxy/002_create_ingress_lb_address.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/lb-proxy/002_create_ingress_lb_address.sh
    ```
 
 ## Prepare the cluster configuration files
@@ -174,11 +182,11 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 1. Connect to the administrative host
 1. **[Admin Host]** Generate the configuration files
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/lb-proxy/003_generate_conf_files.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/lb-proxy/003_generate_conf_files.sh
    ```
 1. **[Admin Host]** Prepare the cluster configuration files
    ```
-   ${ABM_WORK_DIR}/scripts/004_prepare_configuration_files.sh
+   ${ABMRA_WORK_DIR}/scripts/004_prepare_configuration_files.sh
    ```
 
 ## Create the clusters
@@ -186,14 +194,7 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 1. Connect to the administrative host
 1. **[Admin Host]** Create the clusters
    ```
-   ${ABM_WORK_DIR}/scripts/005_create_clusters.sh
-   ```
-
-## Create the ingress load balancers
-
-1. **[Admin Host]** Create the ingress load balancer
-   ```
-   ${ABM_WORK_DIR}/scripts/gcp/lb-proxy/004_create_ingress_lb.sh
+   ${ABMRA_WORK_DIR}/scripts/005_create_clusters.sh
    ```
 
 ## Configure Connect Gateway
@@ -201,21 +202,28 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 1. Connect to the administrative host
 1. **[Admin Host]** Configure Connect Gateway
    ```
-   ${ABM_WORK_DIR}/scripts/006_configure_connect_gateway.sh
+   ${ABMRA_WORK_DIR}/scripts/006_configure_connect_gateway.sh
    ```
 1. Open the URL provided by the script
 1. Verify that all clusters show healthy
+
+## Create the ingress load balancers
+
+1. **[Admin Host]** Create the ingress load balancer
+   ```
+   ${ABMRA_WORK_DIR}/scripts/gcp/lb-proxy/004_create_ingress_lb.sh
+   ```
 
 ## Configure Anthos Config Management(ACM)
 
 1. Connect to the administrative host
 1. **[Admin Host]** Setup ACM
    ```
-   ${ABM_WORK_DIR}/scripts/007_setup_acm.sh
+   ${ABMRA_WORK_DIR}/scripts/007_setup_acm.sh
    ```
 1. **[Admin Host]** Verify ACM
    ```
-   ${ABM_WORK_DIR}/scripts/008_verify_acm.sh
+   ${ABMRA_WORK_DIR}/scripts/008_verify_acm.sh
    ```
    **Verify the following**:
    - `Status` for each cluster shows `SYNCED` before proceeding.
@@ -226,18 +234,18 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 1. Connect to the administrative host
 1. **[Admin Host]** Setup ASM
    ```
-   ${ABM_WORK_DIR}/scripts/009_setup_asm.sh
+   ${ABMRA_WORK_DIR}/scripts/009_setup_asm.sh
    ```
 1. **[Admin Host]** Verify ASM
    ```
-   ${ABM_WORK_DIR}/scripts/010_verify_asm.sh
+   ${ABMRA_WORK_DIR}/scripts/010_verify_asm.sh
    ```
    **Verify the following**:
    - Deployments and Pods are READY.
 
 1. **[Admin Host]** Create the ASM load balancer
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/lb-proxy/005_create_asm_lb.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/lb-proxy/005_create_asm_lb.sh
    ```
 
 ## Deploy the NVIDIA GPU operator
@@ -245,7 +253,7 @@ To create the Shared VPC in the NETWORK_PROJECT_ID project, the `Compute Shared 
 1. Connect to the administrative host
 1. **[Admin Host]** Deploy the NVIDIA GPU operator
    ```
-   ${ABM_WORK_DIR}/scripts/extras/deploy_nvidia_gpu_operator.sh
+   ${ABMRA_WORK_DIR}/scripts/extras/deploy_nvidia_gpu_operator.sh
    ```
 
 ## Deploy the example application
@@ -261,15 +269,15 @@ To delete all of the resources, the instances and projects can just be deleted. 
 1. Open Cloud Shell
 1. **[Cloud Shell]** Delete the cluster instances
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/995_delete_cluster_instances.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/995_delete_cluster_instances.sh
    ```
 1. **[Cloud Shell]** Delete the administrative host
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/999_delete_admin_instance.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/999_delete_admin_instance.sh
    ```
 1. **[Cloud Shell]** Delete the GCP projects
    ```
-   ${ABM_WORK_DIR}/scripts/999_delete_gcp_projects.sh
+   ${ABMRA_WORK_DIR}/scripts/999_delete_gcp_projects.sh
    ```
 
 ### Manual rollback
@@ -277,23 +285,23 @@ To delete all of the resources, the instances and projects can just be deleted. 
 1. Connect to the administrative host
 1. **[Admin Host]** Unregister the clusters
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/994_unregister_cluster.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/994_unregister_cluster.sh
    ```
 1. **[Admin Host]** Delete the cluster instances
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/995_delete_cluster_instances.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/995_delete_cluster_instances.sh
    ```
 1. **[Admin Host]** Delete the load balancers
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/lb-proxy/999_delete_lbs.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/lb-proxy/999_delete_lbs.sh
    ```
 1. **[Admin Host]** Delete the cluster configurations
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/997_delete_cluster_configurations.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/997_delete_cluster_configurations.sh
    ```
 1. **[Admin Host]** Delete the Google service accounts
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/998_delete_gsas.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/998_delete_gsas.sh
    ```
 1. **[Admin Host]** Logout of the administrative host
    ```
@@ -301,13 +309,13 @@ To delete all of the resources, the instances and projects can just be deleted. 
    ```
 1. **[Cloud Shell]** Delete the administrative host
    ```
-   ${ABM_WORK_DIR}/scripts/gcp/999_delete_admin_instance.sh
+   ${ABMRA_WORK_DIR}/scripts/gcp/999_delete_admin_instance.sh
    ```
 1. **[Cloud Shell]** Delete the ACM Cloud Source Repository
    ```
-   ${ABM_WORK_DIR}/scripts/998_delete_acm_csr.sh
+   ${ABMRA_WORK_DIR}/scripts/998_delete_acm_csr.sh
    ```
 1. **[Cloud Shell]** Delete the GCP projects
    ```
-   ${ABM_WORK_DIR}/scripts/999_delete_gcp_projects.sh
+   ${ABMRA_WORK_DIR}/scripts/999_delete_gcp_projects.sh
    ```

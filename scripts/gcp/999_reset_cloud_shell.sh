@@ -14,16 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOG_FILE_PREFIX=gcp-
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+ABMRA_LOG_FILE_PREFIX=gcp-
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Reset CloudShell"
+echo_title "Reset CloudShell"
 
-rm -rf ${ABM_WORK_DIR}/logs
-rm -rf ${ABM_WORK_DIR}/tmp
+rm -rf ${ABMRA_WORK_DIR}/logs
+rm -rf ${ABMRA_WORK_DIR}/tmp
 
-sed -e "s|^source ${ABM_WORK_DIR}/scripts/vars.sh$||g" ~/.profile
-rm -f ${ABM_WORK_DIR}/scripts/var.sh
+sed -e "s|^source ${ABMRA_WORK_DIR}/scripts/vars.sh$||g" ~/.bashrc
+rm -f ${ABMRA_WORK_DIR}/scripts/var.sh
 
 rm -f ~.ssh/google_compute_known_hosts
 

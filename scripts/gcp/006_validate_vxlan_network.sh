@@ -14,18 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOG_FILE_PREFIX=gcp-
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+ABMRA_LOG_FILE_PREFIX=gcp-
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Validating VXLAN networks"
+echo_title "Validating VXLAN networks"
 
 for cluster_name in $(get_cluster_names); do
-    title_no_wait "Validating VXLAN network for ${cluster_name}"
+    echo_title "Validating VXLAN network for ${cluster_name}"
     load_cluster_config ${cluster_name}
     
     for cp in $(seq 1 $(get_number_of_control_plane_nodes)); do
         hostname="${cluster_name}-cp-${cp}"
-        title_no_wait "${hostname}"
+        echo_title "${hostname}"
 
         vxlan_ip_var="CP_${cp}_IP"
         vxlan_ip=${!vxlan_ip_var}
@@ -35,7 +35,7 @@ for cluster_name in $(get_cluster_names); do
 
     for worker in $(seq 1 $(get_number_of_worker_nodes)); do
         hostname="${cluster_name}-worker-${worker}"
-        title_no_wait "${hostname}"
+        echo_title "${hostname}"
 
         vxlan_ip_var="WORKER_${worker}_IP"
         vxlan_ip=${!vxlan_ip_var}

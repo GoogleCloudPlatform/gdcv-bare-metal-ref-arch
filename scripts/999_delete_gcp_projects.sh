@@ -14,19 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Delete application project '${APP_PROJECT_ID}'"
-print_and_execute "gcloud compute shared-vpc associated-projects remove ${APP_PROJECT_ID} --host-project ${NETWORK_PROJECT_ID}"
-print_and_execute "gcloud projects delete --quiet ${APP_PROJECT_ID}"
+echo_title "Delete application project '${ABMRA_APP_PROJECT_ID}'"
+print_and_execute "gcloud compute shared-vpc associated-projects remove ${ABMRA_APP_PROJECT_ID} --host-project ${ABMRA_NETWORK_PROJECT_ID}"
+print_and_execute "gcloud projects delete --quiet ${ABMRA_APP_PROJECT_ID}"
 
-title_no_wait "Delete platform project '${PLATFORM_PROJECT_ID}'"
-print_and_execute "gcloud compute shared-vpc associated-projects remove ${PLATFORM_PROJECT_ID} --host-project ${NETWORK_PROJECT_ID}"
-print_and_execute "gcloud projects delete --quiet ${PLATFORM_PROJECT_ID}"
+echo_title "Delete platform project '${ABMRA_PLATFORM_PROJECT_ID}'"
+print_and_execute "gcloud compute shared-vpc associated-projects remove ${ABMRA_PLATFORM_PROJECT_ID} --host-project ${ABMRA_NETWORK_PROJECT_ID}"
+print_and_execute "gcloud projects delete --quiet ${ABMRA_PLATFORM_PROJECT_ID}"
 
-title_no_wait "Delete network project '${NETWORK_PROJECT_ID}'"
-print_and_execute "gcloud compute shared-vpc disable ${NETWORK_PROJECT_ID}"
-print_and_execute "gcloud projects delete --quiet ${NETWORK_PROJECT_ID}"
+echo_title "Delete network project '${ABMRA_NETWORK_PROJECT_ID}'"
+print_and_execute "gcloud compute shared-vpc disable ${ABMRA_NETWORK_PROJECT_ID}"
+print_and_execute "gcloud projects delete --quiet ${ABMRA_NETWORK_PROJECT_ID}"
 
 check_local_error
 total_runtime

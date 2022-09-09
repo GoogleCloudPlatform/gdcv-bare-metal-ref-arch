@@ -15,12 +15,12 @@
 # limitations under the License.
 
 get_instance_ips () {
-    title_no_wait "Retrieving instance IPs for ${cluster_name}"
+    echo_title "Retrieving instance IPs for ${cluster_name}"
 
     for cp in $(seq 1 $(get_number_of_control_plane_nodes)); do
         hostname="${cluster_name}-cp-${cp}"
 
-        ip_address=$(gcloud compute instances describe ${hostname} --format="value(networkInterfaces[0].networkIP)" --project=${PLATFORM_PROJECT_ID} --zone=${ZONE})
+        ip_address=$(gcloud compute instances describe ${hostname} --format="value(networkInterfaces[0].networkIP)" --project=${ABMRA_PLATFORM_PROJECT_ID} --zone=${ZONE})
         declare CP_${cp}_IP_INSTANCE=${ip_address}
         instance_ips+=(${ip_address})
     done
@@ -28,14 +28,14 @@ get_instance_ips () {
     for worker in $(seq 1 $(get_number_of_worker_nodes)); do
         hostname="${cluster_name}-worker-${worker}"
 
-        ip_address=$(gcloud compute instances describe ${hostname} --format="value(networkInterfaces[0].networkIP)" --project=${PLATFORM_PROJECT_ID} --zone=${ZONE})
+        ip_address=$(gcloud compute instances describe ${hostname} --format="value(networkInterfaces[0].networkIP)" --project=${ABMRA_PLATFORM_PROJECT_ID} --zone=${ZONE})
         declare WORKER_${worker}_IP_INSTANCE=${ip_address}
         instance_ips+=(${ip_address})
     done
 }
 
 process_host () {
-    title_no_wait "${hostname}"
+    echo_title "${hostname}"
 
     instance=$(echo ${hostname} | awk -F"-" '{print toupper($(NF-1))"_"$NF}')
     vxlan_ip_var=${instance}_IP
@@ -57,29 +57,29 @@ ip link set up dev vxlan${vxlan_octets[1]}
 EOF
 
     print_and_execute "gcloud compute scp \
---project=${PLATFORM_PROJECT_ID} \
+--project=${ABMRA_PLATFORM_PROJECT_ID} \
 --zone=${ZONE} \
 ${VXLAN_FILE} ${hostname}:/tmp/vxlan-setup"
 
     print_and_execute "gcloud compute scp \
---project=${PLATFORM_PROJECT_ID} \
+--project=${ABMRA_PLATFORM_PROJECT_ID} \
 --zone=${ZONE} \
 ${VXLAN_CRONTAB_FILE} ${hostname}:/tmp/vxlan.crontab"
 
     print_and_execute "gcloud compute ssh \
 --command=\"sudo mv /tmp/vxlan-setup ${VXLAN_CRONJOB_FILE} \
 && sudo chmod +x ${VXLAN_CRONJOB_FILE} \
-&& sudo chown ${DEPLOYMENT_USER}:${DEPLOYMENT_USER} ${VXLAN_CRONJOB_FILE} \
+&& sudo chown ${ABMRA_DEPLOYMENT_USER}:${ABMRA_DEPLOYMENT_USER} ${VXLAN_CRONJOB_FILE} \
 && sudo crontab /tmp/vxlan.crontab\" \
---project=${PLATFORM_PROJECT_ID} \
+--project=${ABMRA_PLATFORM_PROJECT_ID} \
 --zone=${ZONE} \
 ${hostname}"
 }
 
-LOG_FILE_PREFIX=gcp-
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+ABMRA_LOG_FILE_PREFIX=gcp-
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-TEMP_DIR=${ABM_WORK_DIR}/tmp/vxlan
+TEMP_DIR=${ABMRA_WORK_DIR}/tmp/vxlan
 mkdir -p ${TEMP_DIR}
 
 ADMIN_CRONJOB_FILE=${TEMP_DIR}/admin.vxlan
@@ -92,7 +92,7 @@ echo "sudo ip link add vxlan185 type vxlan id 185 dev ens4 dstport 0" > ${ADMIN_
 echo "sudo ip link add vxlan195 type vxlan id 195 dev ens4 dstport 0" >> ${ADMIN_CRONJOB_FILE}
 
 for cluster_name in $(get_cluster_names); do
-    title_no_wait "${cluster_name}"
+    echo_title "${cluster_name}"
     load_cluster_config ${cluster_name}
 
     declare -a instance_ips
@@ -122,7 +122,7 @@ sudo chmod +x ${ADMIN_CRONJOB_FILE}
 sudo mv ${ADMIN_CRONJOB_FILE} ${VXLAN_CRONJOB_FILE}
 sudo crontab ${VXLAN_CRONTAB_FILE}
 
-bold_no_wait "Wait 60 seconds to ensure networks are created"
+echo_bold "Wait 60 seconds to ensure networks are created"
 print_and_execute "sleep 60"
 
 check_local_error

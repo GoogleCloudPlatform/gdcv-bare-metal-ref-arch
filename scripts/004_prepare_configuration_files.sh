@@ -14,24 +14,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Download bmctl-${BMCTL_VERSION} binary"
+echo_title "Download bmctl-${ABMRA_BMCTL_VERSION} binary"
 
-mkdir -p ${ABM_WORK_DIR}/bin
-print_and_execute "gsutil cp gs://anthos-baremetal-release/bmctl/${BMCTL_VERSION}/linux-amd64/bmctl ${ABM_WORK_DIR}/bin/bmctl"
-print_and_execute "chmod a+x ${ABM_WORK_DIR}/bin/bmctl"
-print_and_execute "sudo cp -p ${ABM_WORK_DIR}/bin/bmctl /usr/local/bin/"
+mkdir -p ${ABMRA_WORK_DIR}/bin
+print_and_execute "gsutil cp gs://anthos-baremetal-release/bmctl/${ABMRA_BMCTL_VERSION}/linux-amd64/bmctl ${ABMRA_WORK_DIR}/bin/bmctl"
+print_and_execute "chmod a+x ${ABMRA_WORK_DIR}/bin/bmctl"
+print_and_execute "sudo cp -p ${ABMRA_WORK_DIR}/bin/bmctl /usr/local/bin/"
 
 if [ ! -f /usr/local/bin/bmctl ]; then
-    error_no_wait "Failed to download or install 'bmctl', exiting!"
+    echo_error "Failed to download or install 'bmctl', exiting!"
     exit -1
 fi
 
-title_no_wait "Create cluster configurations"
-cd ${ABM_WORK_DIR}
+echo_title "Create cluster configurations"
+cd ${ABMRA_WORK_DIR}
 for cluster_name in $(get_cluster_names); do
-    title_no_wait "Creating configuration for ${cluster_name}"
+    echo_title "Creating configuration for ${cluster_name}"
     load_cluster_config ${cluster_name}
 
     control_plane_node_pool_addresses=""
@@ -46,44 +46,44 @@ for cluster_name in $(get_cluster_names); do
     done
     export WORKER_NODE_POOL=${worker_node_pool_addresses}
 
-    bold_no_wait "${cluster_name}"
-    cluster_yaml=${BMCTL_WORKSPACE_DIR}/${cluster_name}/${cluster_name}.yaml
+    echo_bold "${cluster_name}"
+    cluster_yaml=${ABMRA_BMCTL_WORKSPACE_DIR}/${cluster_name}/${cluster_name}.yaml
     if [ ! -f "${cluster_yaml}" ]; then
-        print_and_execute "bmctl create config --cluster ${cluster_name} --create-service-accounts --enable-apis --project-id ${PLATFORM_PROJECT_ID}"
+        print_and_execute "bmctl create config --cluster ${cluster_name} --create-service-accounts --enable-apis --project-id ${ABMRA_PLATFORM_PROJECT_ID}"
         if [ $? -eq 0 ]; then
-            bold_no_wait "Applying kustomizations"
+            echo_bold "Applying kustomizations"
 
             cp -p ${cluster_yaml} ${cluster_yaml}.orig
             sed -i '0,/^---$/d' ${cluster_yaml}
 
-            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATION_TYPE}/kustomization.yaml > ${BMCTL_WORKSPACE_DIR}/${cluster_name}/kustomization.yaml
-            envsubst <  ${ABM_WORK_DIR}/kustomizations/${KUSTOMIZATION_TYPE}/patch.yaml | sed 's/\\n/\n/g' > ${BMCTL_WORKSPACE_DIR}/${cluster_name}/patch.yaml
+            envsubst <  ${ABMRA_BASE_KUSTOMIZE_DIR}/${KUSTOMIZATION_TYPE}/kustomization.yaml > ${ABMRA_BMCTL_WORKSPACE_DIR}/${cluster_name}/kustomization.yaml
+            envsubst <  ${ABMRA_BASE_KUSTOMIZE_DIR}/${KUSTOMIZATION_TYPE}/patch.yaml | sed 's/\\n/\n/g' > ${ABMRA_BMCTL_WORKSPACE_DIR}/${cluster_name}/patch.yaml
 
             kubectl kustomize bmctl-workspace/${cluster_name} > ${cluster_yaml}.tmp
             mv ${cluster_yaml}.tmp ${cluster_yaml}
             
-            cat ${ABM_WORK_DIR}/kustomizations/bmctl-config.yaml | envsubst > ${BMCTL_WORKSPACE_DIR}/${cluster_name}/bmctl-config.yaml
-            cat ${ABM_WORK_DIR}/bmctl-workspace/${cluster_name}/bmctl-config.yaml ${cluster_yaml} > ${cluster_yaml}.tmp
+            cat ${ABMRA_BASE_KUSTOMIZE_DIR}/bmctl-config.yaml | envsubst > ${ABMRA_BMCTL_WORKSPACE_DIR}/${cluster_name}/bmctl-config.yaml
+            cat ${ABMRA_WORK_DIR}/bmctl-workspace/${cluster_name}/bmctl-config.yaml ${cluster_yaml} > ${cluster_yaml}.tmp
             mv ${cluster_yaml}.tmp ${cluster_yaml}
 
-            bold_no_wait "Checking configuration"
-            print_and_execute "bmctl --workspace-dir ${BMCTL_WORKSPACE_DIR} check config --cluster ${cluster_name}"
+            echo_bold "Checking configuration"
+            print_and_execute "bmctl --workspace-dir ${ABMRA_BMCTL_WORKSPACE_DIR} check config --cluster ${cluster_name}"
             echo
         else
-            error_no_wait "There was an error generating the configuration for cluster '${cluster_name}'"
+            echo_error "There was an error generating the configuration for cluster '${cluster_name}'"
         fi
     else
-        error_no_wait "Configuration for cluster '${cluster_name}' already exists at ${cluster_yaml}."
-        error_no_wait "Delete the existing configuration file to generate a new configuration file"
+        echo_error "Configuration for cluster '${cluster_name}' already exists at ${cluster_yaml}."
+        echo_error "Delete the existing configuration file to generate a new configuration file"
     fi
 
     unset CONTROL_PLANE_NODE_POOL
     unset WORKER_NODE_POOL
 done
 
-mkdir -p ${ABM_WORK_DIR}/keys
-sudo cp ${DEPLOYMENT_USER_SSH_KEY} ${ABM_WORK_DIR}/keys/id_rsa
-sudo chown ${USER}:${USER} ${ABM_WORK_DIR}/keys/id_rsa
+mkdir -p ${ABMRA_WORK_DIR}/keys
+sudo cp ${DEPLOYMENT_USER_SSH_KEY} ${ABMRA_WORK_DIR}/keys/id_rsa
+sudo chown ${USER}:${USER} ${ABMRA_WORK_DIR}/keys/id_rsa
 
 check_local_error
 total_runtime

@@ -14,11 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Reset clusters"
+echo_title "Reset clusters"
 for cluster_name in $(get_cluster_names); do
-    print_and_execute "bmctl --workspace-dir ${BMCTL_WORKSPACE_DIR} reset -c ${cluster_name}"
+    print_and_execute "bmctl --workspace-dir ${ABMRA_BMCTL_WORKSPACE_DIR} reset -c ${cluster_name}"
 done
 
 check_local_error

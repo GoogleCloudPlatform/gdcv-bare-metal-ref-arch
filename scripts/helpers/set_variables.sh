@@ -15,14 +15,17 @@
 # limitations under the License.
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-export ABM_WORK_DIR=$(dirname ${SCRIPT_PATH%/*})
+export ABMRA_WORK_DIR=$(dirname ${SCRIPT_PATH%/*})
 
-if [[ ! -z "${BMCTL_VERSION}" ]]; then
-    echo "BMCTL_VERSION is set, a previous configuration file could change default values"
+if [[ ! -z "${ABMRA_BMCTL_VERSION}" ]]; then
+    source ${ABMRA_WORK_DIR}/scripts/helpers/display.sh
+    echo_warning "ABMRA_BMCTL_VERSION is set, a previous configuration file could change default values"
     echo -e "--> Press ENTER to continue..."
     read -p ''
 fi
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
+
+env | grep -e '^ABMRA_' | sort
 
 total_runtime
