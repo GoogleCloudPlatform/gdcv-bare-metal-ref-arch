@@ -14,12 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOG_FILE_PREFIX=gcp-
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+ABMRA_LOG_FILE_PREFIX=gcp-
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
 for cluster_name in $(get_cluster_names); do
-    title_no_wait "Delete cluster configuration for '${cluster_name}'"
-    print_and_execute "rm -rf ${BMCTL_WORKSPACE_DIR}/${cluster_name}"
+    echo_title "Delete cluster configuration for '${cluster_name}'"
+    print_and_execute "rm -rf ${ABMRA_BMCTL_WORKSPACE_DIR}/${cluster_name}"
 done
 
 check_local_error

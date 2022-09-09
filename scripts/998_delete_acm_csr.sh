@@ -14,20 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-if [ -d ${ACM_REPO_DIRECTORY} ]; then
-    title_no_wait "Deleting the local ACM repository directory"
-    print_and_execute "rm -rf ${ACM_REPO_DIRECTORY}"
+if [ -d ${ABMRA_ACM_REPO_DIR} ]; then
+    echo_title "Deleting the local ACM repository directory"
+    print_and_execute "rm -rf ${ABMRA_ACM_REPO_DIR}"
 fi
 
-title_no_wait "Deleteting ACM CSR"
-print_and_execute "gcloud source repos delete acm --project ${PLATFORM_PROJECT_ID} --quiet"
+echo_title "Deleteting ACM CSR"
+print_and_execute "gcloud source repos delete acm --project ${ABMRA_PLATFORM_PROJECT_ID} --quiet"
 
 ABM_ACM_GSA_NAME="anthos-config-mgmt"
-ABM_ACM_GSA="${ABM_ACM_GSA_NAME}@${PLATFORM_PROJECT_ID}.iam.gserviceaccount.com"
+ABM_ACM_GSA="${ABM_ACM_GSA_NAME}@${ABMRA_PLATFORM_PROJECT_ID}.iam.gserviceaccount.com"
 
-title_no_wait "Delete ${ABM_ACM_GSA_NAME} GSA"
+echo_title "Delete ${ABM_ACM_GSA_NAME} GSA"
 print_and_execute "gcloud iam service-accounts delete ${ABM_ACM_GSA} --quiet"
 
 check_local_error

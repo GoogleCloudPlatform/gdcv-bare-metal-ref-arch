@@ -14,24 +14,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOG_FILE_PREFIX=gcp-
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+ABMRA_LOG_FILE_PREFIX=gcp-
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
 for cluster_name in $(get_cluster_names); do
     load_cluster_config ${cluster_name}
     
     network_args="--network ${NETWORK}"
-    if [ ${USE_SHARED_VPC,,} == "true" ]; then
-        network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${REGION}/subnetworks/${SUBNET}"
+    if [ ${ABMRA_USE_SHARED_VPC,,} == "true" ]; then
+        network_args="--subnet projects/${ABMRA_NETWORK_PROJECT_ID}/regions/${REGION}/subnetworks/${SUBNET}"
     fi
 
     for worker in $(seq 1 $(get_number_of_worker_nodes)); do
         hostname="${cluster_name}-worker-${worker}"
 
-        title_no_wait "Delete ${hostname} in ${ZONE}"
+        echo_title "Delete ${hostname} in ${ZONE}"
         print_and_execute "gcloud compute instances delete ${hostname} \
 --delete-disks=all \
---project=${PLATFORM_PROJECT_ID} \
+--project=${ABMRA_PLATFORM_PROJECT_ID} \
 --quiet \
 --zone=${ZONE}"
     done
@@ -39,17 +39,17 @@ for cluster_name in $(get_cluster_names); do
     for cp in $(seq 1 $(get_number_of_control_plane_nodes)); do
         hostname="${cluster_name}-cp-${cp}"
     
-        title_no_wait "Delete ${hostname} in ${ZONE}"
+        echo_title "Delete ${hostname} in ${ZONE}"
         print_and_execute "gcloud compute instances delete ${hostname} \
 --delete-disks=all \
---project=${PLATFORM_PROJECT_ID} \
+--project=${ABMRA_PLATFORM_PROJECT_ID} \
 --quiet \
 --zone=${ZONE}"
     done
 done
 
 print_and_execute "sudo rm -f ~/.ssh/known_hosts"
-print_and_execute "sudo rm -f ~${DEPLOYMENT_USER}/.ssh/known_hosts"
+print_and_execute "sudo rm -f ~${ABMRA_DEPLOYMENT_USER}/.ssh/known_hosts"
 
 check_local_error
 total_runtime

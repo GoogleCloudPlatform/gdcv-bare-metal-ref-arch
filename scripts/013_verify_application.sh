@@ -14,12 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
+export KUBECONFIG=$(ls -1 ${ABMRA_BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do 
-    title_no_wait "Verify application on ${cluster_name}"
-    print_and_execute "kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} get pods"
+    echo_title "Verify application on ${cluster_name}"
+    print_and_execute "kubectl --context=${cluster_name} --namespace=${ABMRA_APP_NAMESPACE} get pods"
 
     print_and_execute "SERVICE_EXTERNAL_IP=$(kubectl --context=${cluster_name} --namespace=gke-system get service/istio-ingress --output jsonpath='{.status.loadBalancer.ingress[0].ip}')"
     if [ -z ${SERVICE_EXTERNAL_IP} ]; then

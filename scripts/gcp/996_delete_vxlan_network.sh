@@ -14,27 +14,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOG_FILE_PREFIX=gcp-
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+ABMRA_LOG_FILE_PREFIX=gcp-
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-TEMP_DIR=${ABM_WORK_DIR}/tmp/vxlan
+TEMP_DIR=${ABMRA_WORK_DIR}/tmp/vxlan
 mkdir -p ${TEMP_DIR}
 
 VXLAN_CRONTAB_FILE=${TEMP_DIR}/vxlan.crontab
 VXLAN_CRONJOB_FILE=/etc/cron.d/vxlan-setup
 
-title_no_wait "Remove the crontab entry"
+echo_title "Remove the crontab entry"
 crontab -l | grep -v "vxlan-setup ${VXLAN_CRONJOB_FILE}" > ${VXLAN_CRONTAB_FILE}
 sudo crontab ${VXLAN_CRONTAB_FILE}
 
-title_no_wait "Remove the cronjob file"
+echo_title "Remove the cronjob file"
 sudo rm -f ${VXLAN_CRONJOB_FILE}
 
-title_no_wait "Remove the interfaces"
+echo_title "Remove the interfaces"
 sudo ip link del vxlan185 type vxlan id 185 dev ens4 dstport 0
 sudo ip link del vxlan195 type vxlan id 195 dev ens4 dstport 0
 
-title_no_wait "Remove the temporary directory"
+echo_title "Remove the temporary directory"
 rm -rf ${TEMP_DIR}
 
 check_local_error

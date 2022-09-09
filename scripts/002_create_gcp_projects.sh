@@ -14,19 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Create network project '${NETWORK_PROJECT_ID}'"
-print_and_execute "gcloud projects create ${NETWORK_PROJECT_ID} --organization=${ORGANIZATION_ID} --folder=${FOLDER_ID}"
-print_and_execute "gcloud beta billing projects link ${NETWORK_PROJECT_ID} --billing-account ${BILLING_ACCOUNT_ID}"
+if [ ${ABMRA_USE_SHARED_VPC,,} == "true" ]; then
+    echo_title "Create network project '${ABMRA_NETWORK_PROJECT_ID}'"
+    print_and_execute "gcloud projects create ${ABMRA_NETWORK_PROJECT_ID} --organization=${ABMRA_ORGANIZATION_ID} --folder=${ABMRA_FOLDER_ID}"
+    print_and_execute "gcloud beta billing projects link ${ABMRA_NETWORK_PROJECT_ID} --billing-account ${ABMRA_BILLING_ACCOUNT_ID}"
 
-title_no_wait "Create platform project '${PLATFORM_PROJECT_ID}'"
-print_and_execute "gcloud projects create ${PLATFORM_PROJECT_ID} --set-as-default --organization=${ORGANIZATION_ID} --folder=${FOLDER_ID}"
-print_and_execute "gcloud beta billing projects link ${PLATFORM_PROJECT_ID} --billing-account ${BILLING_ACCOUNT_ID}"
+    echo_title "Create platform project '${ABMRA_PLATFORM_PROJECT_ID}'"
+    print_and_execute "gcloud projects create ${ABMRA_PLATFORM_PROJECT_ID} --set-as-default --organization=${ABMRA_ORGANIZATION_ID} --folder=${ABMRA_FOLDER_ID}"
+    print_and_execute "gcloud beta billing projects link ${ABMRA_PLATFORM_PROJECT_ID} --billing-account ${ABMRA_BILLING_ACCOUNT_ID}"
 
-title_no_wait "Create application project '${APP_PROJECT_ID}'"
-print_and_execute "gcloud projects create ${APP_PROJECT_ID} --organization=${ORGANIZATION_ID} --folder=${FOLDER_ID}"
-print_and_execute "gcloud beta billing projects link ${APP_PROJECT_ID} --billing-account ${BILLING_ACCOUNT_ID}"
+    echo_title "Create application project '${ABMRA_APP_PROJECT_ID}'"
+    print_and_execute "gcloud projects create ${ABMRA_APP_PROJECT_ID} --organization=${ABMRA_ORGANIZATION_ID} --folder=${ABMRA_FOLDER_ID}"
+    print_and_execute "gcloud beta billing projects link ${ABMRA_APP_PROJECT_ID} --billing-account ${ABMRA_BILLING_ACCOUNT_ID}"
+else
+    echo_warning "ABMRA_USE_SHARED_VPC is not set to 'true', skipping project creation!"
+fi
 
 check_local_error
 total_runtime

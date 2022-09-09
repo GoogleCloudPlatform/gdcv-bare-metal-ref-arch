@@ -14,15 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Verify ACM status"
-print_and_execute "gcloud beta container hub config-management status --project=${PLATFORM_PROJECT_ID}"
+echo_title "Verify ACM status"
+print_and_execute "gcloud beta container hub config-management status --project=${ABMRA_PLATFORM_PROJECT_ID}"
 
 echo
-bold_no_wait "======================================================================================================================="
-bold_no_wait "Config Management Status: https://console.cloud.google.com/anthos/config_management?project=${PLATFORM_PROJECT_ID}"
-bold_no_wait "======================================================================================================================="
+echo_bold "======================================================================================================================="
+echo_bold "Config Management Status: https://console.cloud.google.com/anthos/config_management?project=${ABMRA_PLATFORM_PROJECT_ID}"
+echo_bold "======================================================================================================================="
 echo
 
 check_local_error

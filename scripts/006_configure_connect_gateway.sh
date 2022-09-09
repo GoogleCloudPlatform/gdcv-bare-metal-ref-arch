@@ -14,21 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-TEMP_DIR=${ABM_WORK_DIR}/tmp
+TEMP_DIR=${ABMRA_WORK_DIR}/tmp
 mkdir -p ${TEMP_DIR}
 
-title_no_wait "Enable the Connect Gateway APIs"
+echo_title "Enable the Connect Gateway APIs"
 print_and_execute "gcloud services enable connectgateway.googleapis.com"
 
 user_account=$(gcloud auth list --filter=status:ACTIVE --format="value(account)")
-title_no_wait "Create roles/gkehub.viewer IAM policy bindings for ${user_account}"
-print_and_execute "gcloud projects add-iam-policy-binding ${PLATFORM_PROJECT_ID} --member 'user:${user_account}' --role 'roles/gkehub.viewer'"
+echo_title "Create roles/gkehub.viewer IAM policy bindings for ${user_account}"
+print_and_execute "gcloud projects add-iam-policy-binding ${ABMRA_PLATFORM_PROJECT_ID} --member 'user:${user_account}' --role 'roles/gkehub.viewer'"
 
-export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
+export KUBECONFIG=$(ls -1 ${ABMRA_BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do   
-    title_no_wait "Configuring Connect Gateway for ${cluster_name}"
+    echo_title "Configuring Connect Gateway for ${cluster_name}"
 
     impersonate_yaml_file=${TEMP_DIR}/impersonate.yaml
     cat <<EOF > ${impersonate_yaml_file}
@@ -60,7 +60,7 @@ subjects:
   namespace: gke-connect
 EOF
 
-    bold_no_wait "Apply impersonation policy for ${user_account}"
+    echo_bold "Apply impersonation policy for ${user_account}"
     print_and_execute "kubectl --context=${cluster_name} apply --filename ${impersonate_yaml_file} && rm ${impersonate_yaml_file}"
 
     cluster_admin_yaml_file=${TEMP_DIR}/cluster-admin.yaml
@@ -78,16 +78,16 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 EOF
 
-    bold_no_wait "Apply cluster-admin ClusterRole for ${user_account}"
+    echo_bold "Apply cluster-admin ClusterRole for ${user_account}"
     print_and_execute "kubectl --context=${cluster_name} apply --filename ${cluster_admin_yaml_file} && rm ${cluster_admin_yaml_file}"
 done
 
 echo
-bold_no_wait "==================================================================================================================================="
-bold_no_wait " You should now be logged into, or be able to login to, each cluster using your Google identity:"
-bold_no_wait " https://console.cloud.google.com/anthos/clusters?project=${PLATFORM_PROJECT_ID}"
-bold_no_wait " https://console.cloud.google.com/kubernetes/list/overview?${PLATFORM_PROJECT_ID}"
-bold_no_wait "==================================================================================================================================="
+echo_bold "==================================================================================================================================="
+echo_bold " You should now be logged into, or be able to login to, each cluster using your Google identity:"
+echo_bold " https://console.cloud.google.com/anthos/clusters?project=${ABMRA_PLATFORM_PROJECT_ID}"
+echo_bold " https://console.cloud.google.com/kubernetes/list/overview?${ABMRA_PLATFORM_PROJECT_ID}"
+echo_bold "==================================================================================================================================="
 echo
 
 check_local_error

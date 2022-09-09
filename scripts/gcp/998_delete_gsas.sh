@@ -14,23 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOG_FILE_PREFIX=gcp-
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+ABMRA_LOG_FILE_PREFIX=gcp-
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Delete anthos-baremetal-cloud-ops GSA"
-print_and_execute "gcloud iam service-accounts delete anthos-baremetal-cloud-ops@${PLATFORM_PROJECT_ID}.iam.gserviceaccount.com --quiet"
+echo_title "Delete anthos-baremetal-cloud-ops GSA"
+print_and_execute "gcloud iam service-accounts delete anthos-baremetal-cloud-ops@${ABMRA_PLATFORM_PROJECT_ID}.iam.gserviceaccount.com --quiet"
 
-title_no_wait "Delete anthos-baremetal-connect GSA"
-print_and_execute "gcloud iam service-accounts delete anthos-baremetal-connect@${PLATFORM_PROJECT_ID}.iam.gserviceaccount.com --quiet"
+echo_title "Delete anthos-baremetal-connect GSA"
+print_and_execute "gcloud iam service-accounts delete anthos-baremetal-connect@${ABMRA_PLATFORM_PROJECT_ID}.iam.gserviceaccount.com --quiet"
 
-title_no_wait "Delete anthos-baremetal-gcr GSA"
-print_and_execute "gcloud iam service-accounts delete anthos-baremetal-gcr@${PLATFORM_PROJECT_ID}.iam.gserviceaccount.com --quiet"
+echo_title "Delete anthos-baremetal-gcr GSA"
+print_and_execute "gcloud iam service-accounts delete anthos-baremetal-gcr@${ABMRA_PLATFORM_PROJECT_ID}.iam.gserviceaccount.com --quiet"
 
-title_no_wait "Delete anthos-baremetal-register GSA"
-print_and_execute "gcloud iam service-accounts delete anthos-baremetal-register@${PLATFORM_PROJECT_ID}.iam.gserviceaccount.com --quiet"
+echo_title "Delete anthos-baremetal-register GSA"
+print_and_execute "gcloud iam service-accounts delete anthos-baremetal-register@${ABMRA_PLATFORM_PROJECT_ID}.iam.gserviceaccount.com --quiet"
 
-title_no_wait "Delete GSA files"
-print_and_execute "rm -rf ${BMCTL_WORKSPACE_DIR}/.sa-keys ${BMCTL_WORKSPACE_DIR}/config.json ${BMCTL_WORKSPACE_DIR}/config.toml"
+echo_title "Delete GSA files"
+print_and_execute "rm -rf ${ABMRA_BMCTL_WORKSPACE_DIR}/.sa-keys ${ABMRA_BMCTL_WORKSPACE_DIR}/config.json ${ABMRA_BMCTL_WORKSPACE_DIR}/config.toml"
 
 check_local_error
 total_runtime

@@ -14,18 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOG_FILE_PREFIX=gcp-
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+ABMRA_LOG_FILE_PREFIX=gcp-
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Enable compute.googleapis.com API"
-print_and_execute "gcloud services enable compute.googleapis.com --project ${PLATFORM_PROJECT_ID}"
+echo_title "Enable compute.googleapis.com API"
+print_and_execute "gcloud services enable compute.googleapis.com --project ${ABMRA_PLATFORM_PROJECT_ID}"
 
-title_no_wait "Creating administrative instance"
+echo_title "Creating administrative instance"
 load_global_config
 
 network_args="--network ${ADMIN_WORKSTATION_NETWORK}"
-if [ ${USE_SHARED_VPC,,} == "true" ]; then
-    network_args="--subnet projects/${NETWORK_PROJECT_ID}/regions/${ADMIN_WORKSTATION_REGION}/subnetworks/${ADMIN_WORKSTATION_SUBNET}"
+if [ ${ABMRA_USE_SHARED_VPC,,} == "true" ]; then
+    network_args="--subnet projects/${ABMRA_NETWORK_PROJECT_ID}/regions/${ADMIN_WORKSTATION_REGION}/subnetworks/${ADMIN_WORKSTATION_SUBNET}"
 fi
 
 print_and_execute "gcloud compute instances create bare-metal-admin-1 \
@@ -35,16 +35,16 @@ print_and_execute "gcloud compute instances create bare-metal-admin-1 \
 --image-family=ubuntu-2004-lts \
 --image-project=ubuntu-os-cloud \
 --machine-type=${ADMIN_WORKSTATION_MACHINE_TYPE} \
---metadata-from-file startup-script=${ABM_WORK_DIR}/scripts/gcp/instance_startup_script.sh \
+--metadata-from-file startup-script=${ABMRA_WORK_DIR}/scripts/gcp/instance_startup_script.sh \
 --no-scopes \
 --no-service-account \
---project ${PLATFORM_PROJECT_ID} \
+--project ${ABMRA_PLATFORM_PROJECT_ID} \
 --quiet \
 --zone=${ADMIN_WORKSTATION_ZONE} \
 ${network_args}"
 
-title_no_wait "Waiting for the administrative instance to be available"
-while ! gcloud compute ssh bare-metal-admin-1 --command=date --project=${PLATFORM_PROJECT_ID} --zone=${ADMIN_WORKSTATION_ZONE} &>/dev/null; do
+echo_title "Waiting for the administrative instance to be available"
+while ! gcloud compute ssh bare-metal-admin-1 --command=date --project=${ABMRA_PLATFORM_PROJECT_ID} --zone=${ADMIN_WORKSTATION_ZONE} &>/dev/null; do
     sleep 1
 done
 

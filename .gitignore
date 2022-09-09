@@ -2,10 +2,12 @@
 
 /.manifests/
 /.theia/
+/.vscode/
 /acm/
 /bank-of-anthos/
 /bin/
 /bmctl-workspace/
+/conf/
 /keys/
 /logs/
 /tmp/

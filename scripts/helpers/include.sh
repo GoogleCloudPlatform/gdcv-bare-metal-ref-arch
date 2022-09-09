@@ -16,77 +16,85 @@
 
 export start_timestamp=`date +%s`
 
-source ${ABM_WORK_DIR}/scripts/helpers/configuration.sh
-source ${ABM_WORK_DIR}/scripts/helpers/functions.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/configuration.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/display.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/functions.sh
 
-pv_installed=`which pv`
-if [ -z ${pv_installed} ]; then
-    title_no_wait "Install pv"
-    nopv_and_execute "sudo apt-get update && sudo apt-get -y install pv"
-fi
+export ABMRA_ENVIRONMENT_FILE=${ABMRA_WORK_DIR}/scripts/vars.sh
+touch ${ABMRA_ENVIRONMENT_FILE}
 
-export ENVIRONMENT_FILE=${ABM_WORK_DIR}/scripts/vars.sh
-touch ${ENVIRONMENT_FILE}
+source ${ABMRA_WORK_DIR}/scripts/helpers/environment.sh
 
-source ${ABM_WORK_DIR}/scripts/helpers/environment.sh
-
-source ${ENVIRONMENT_FILE}
+source ${ABMRA_ENVIRONMENT_FILE}
 
 # Create a logs folder and file and send stdout and stderr to console and log file
-mkdir -p ${ABM_WORK_DIR}/logs
-export LOG_FILE=${ABM_WORK_DIR}/logs/${LOG_FILE_PREFIX}$(basename $0)-$(date +%s).log
-touch ${LOG_FILE}
+mkdir -p ${ABMRA_WORK_DIR}/logs
+export ABMRA_LOG_FILE=${ABMRA_WORK_DIR}/logs/${ABMRA_LOG_FILE_PREFIX}$(basename $0)-$(date +%s).log
+touch ${ABMRA_LOG_FILE}
 exec 2>&1
-exec &> >(tee -i ${LOG_FILE})
+exec &> >(tee -i ${ABMRA_LOG_FILE})
 
-set_environment_variable_skip_if_existing "ABM_ADDITIONAL_CONF=${ABM_ADDITIONAL_CONF:-}"
-set_environment_variable_skip_if_existing "ABM_WORK_DIR=${ABM_WORK_DIR}"
-set_environment_variable_skip_if_existing "APP_NAMESPACE=${APP_NAMESPACE:-bofa}"
-set_environment_variable_skip_if_existing "APP_PROJECT_ID=${APP_PROJECT_ID:-project-2-bofa-prod}"
-set_environment_variable_skip_if_existing "ASM_GATEWAY_NAMESPACE=${ASM_GATEWAY_NAMESPACE:-asm-gateway}"
-set_environment_variable_skip_if_existing "ASM_VERSION_MAJOR=${ASM_VERSION_MAJOR:-1}"
-set_environment_variable_skip_if_existing "ASM_VERSION_MINOR=${ASM_VERSION_MINOR:-14}"
-set_environment_variable_skip_if_existing "ASM_VERSION_POINT=${ASM_VERSION_POINT:-1}"
-set_environment_variable_skip_if_existing "ASM_VERSION_REV=${ASM_VERSION_REV:-3}"
-set_environment_variable_skip_if_existing "ASM_VERSION_CONFIG=${ASM_VERSION_CONFIG:-1}"
-set_environment_variable_skip_if_existing "BILLING_ACCOUNT_ID=${BILLING_ACCOUNT_ID}"
-set_environment_variable_skip_if_existing "BMCTL_VERSION=${BMCTL_VERSION:-1.12.1}"
-set_environment_variable_skip_if_existing "CLOUD_OPS_REGION=${CLOUD_OPS_REGION:-global}"
-set_environment_variable_skip_if_existing "CLOUD_SDK_VERSION=${CLOUD_SDK_VERSION:-394.0.0}"
-set_environment_variable_skip_if_existing "DEPLOYMENT_USER=${DEPLOYMENT_USER:-anthos}"
-set_environment_variable_skip_if_existing_blank_allowed "FOLDER_ID=${FOLDER_ID:-}"
-set_environment_variable_skip_if_existing "KIND_VERSION=${KIND_VERSION:-0.11.1}"
-set_environment_variable_skip_if_existing "KUSTOMIZATION_TYPE=${KUSTOMIZATION_TYPE:-hybrid}"
-set_environment_variable_skip_if_existing "NETWORK_PROJECT_ID=${NETWORK_PROJECT_ID:-project-0-net-prod}"
-set_environment_variable_skip_if_existing_blank_allowed "ORGANIZATION_ID=${ORGANIZATION_ID:-}"
-set_environment_variable_skip_if_existing "PLATFORM_PROJECT_ID=${PLATFORM_PROJECT_ID:-project-1-platform-prod}"
-set_environment_variable_skip_if_existing "USE_SHARED_VPC=${USE_SHARED_VPC:-true}"
+# ABM configuration variables
+set_environment_variable_skip_if_existing "ABMRA_ADDITIONAL_CONF=${ABMRA_ADDITIONAL_CONF:-}"
+set_environment_variable_skip_if_existing "ABMRA_APP_NAMESPACE=${ABMRA_APP_NAMESPACE:-bofa}"
+set_environment_variable_skip_if_existing "ABMRA_BASE_CONF=${ABMRA_BASE_CONF:-hybrid-bundled-lb}"
+set_environment_variable_skip_if_existing "ABMRA_BMCTL_VERSION=${ABMRA_BMCTL_VERSION:-1.12.2}"
+set_environment_variable_skip_if_existing "ABMRA_CLOUD_OPS_REGION=${ABMRA_CLOUD_OPS_REGION:-global}"
+set_environment_variable_skip_if_existing "ABMRA_CLOUD_SDK_VERSION=${ABMRA_CLOUD_SDK_VERSION:-402.0.0}"
+set_environment_variable_skip_if_existing "ABMRA_CREATE_PROJECTS=${ABMRA_CLOUD_SDK_VERSION:-true}"
+set_environment_variable_skip_if_existing "ABMRA_DEPLOYMENT_USER=${ABMRA_DEPLOYMENT_USER:-anthos}"
+set_environment_variable_skip_if_existing "ABMRA_KIND_VERSION=${ABMRA_KIND_VERSION:-0.12.0}"
+set_environment_variable_skip_if_existing "ABMRA_USE_SHARED_VPC=${ABMRA_USE_SHARED_VPC:-true}"
+set_environment_variable_skip_if_existing "ABMRA_WORK_DIR=${ABMRA_WORK_DIR}"
+
+# ASM configuration variables
+set_environment_variable_skip_if_existing "ABMRA_ASM_INGRESSGATEWAY_NAMESPACE=${ABMRA_ASM_INGRESSGATEWAY_NAMESPACE:-asm-ingressgateway}"
+set_environment_variable_skip_if_existing "ABMRA_ASM_VERSION_MAJOR=${ABMRA_ASM_VERSION_MAJOR:-1}"
+set_environment_variable_skip_if_existing "ABMRA_ASM_VERSION_MINOR=${ABMRA_ASM_VERSION_MINOR:-14}"
+set_environment_variable_skip_if_existing "ABMRA_ASM_VERSION_POINT=${ABMRA_ASM_VERSION_POINT:-3}"
+set_environment_variable_skip_if_existing "ABMRA_ASM_VERSION_REV=${ABMRA_ASM_VERSION_REV:-1}"
+set_environment_variable_skip_if_existing "ABMRA_ASM_VERSION_CONFIG=${ABMRA_ASM_VERSION_CONFIG:-1}"
+
+# Account configuration variables
+set_environment_variable_skip_if_existing "ABMRA_BILLING_ACCOUNT_ID=${ABMRA_BILLING_ACCOUNT_ID}"
+set_environment_variable_skip_if_existing_blank_allowed "ABMRA_FOLDER_ID=${ABMRA_FOLDER_ID:-}"
+set_environment_variable_skip_if_existing_blank_allowed "ABMRA_ORGANIZATION_ID=${ABMRA_ORGANIZATION_ID:-}"
+
+# Project configuration variables
+set_environment_variable_skip_if_existing "ABMRA_APP_PROJECT_ID=${ABMRA_APP_PROJECT_ID:-project-2-bofa-prod}"
+set_environment_variable_skip_if_existing "ABMRA_NETWORK_PROJECT_ID=${ABMRA_NETWORK_PROJECT_ID:-project-0-net-prod}"
+set_environment_variable_skip_if_existing "ABMRA_PLATFORM_PROJECT_ID=${ABMRA_PLATFORM_PROJECT_ID:-project-1-platform-prod}"
 
 # Variable with dependencies above
-set_environment_variable_skip_if_existing "ABM_CONF_DIR=${ABM_CONF_DIR:-${ABM_WORK_DIR}/conf}"
-set_environment_variable_skip_if_existing "ACM_REPO_DIRECTORY=${ACM_REPO_DIRECTORY:-${ABM_WORK_DIR}/acm}"
-set_environment_variable_skip_if_existing "ASM_REV_LABEL=${ASM_REV_LABEL:-asm-${ASM_VERSION_MAJOR}${ASM_VERSION_MINOR}${ASM_VERSION_POINT}-${ASM_VERSION_REV}}"
-set_environment_variable_skip_if_existing "BMCTL_WORKSPACE_DIR=${BMCTL_WORKSPACE_DIR:-${ABM_WORK_DIR}/bmctl-workspace}"
+set_environment_variable_skip_if_existing "ABMRA_BASE_DIR=${ABMRA_BASE_DIR:-${ABMRA_WORK_DIR}/base}"
+set_environment_variable_skip_if_existing "ABMRA_BMCTL_WORKSPACE_DIR=${ABMRA_BMCTL_WORKSPACE_DIR:-${ABMRA_WORK_DIR}/bmctl-workspace}"
+set_environment_variable_skip_if_existing "ABMRA_CONF_DIR=${ABMRA_CONF_DIR:-${ABMRA_WORK_DIR}/conf}"
+set_environment_variable_skip_if_existing "ABMRA_ACM_REPO_DIR=${ABMRA_ACM_REPO_DIR:-${ABMRA_WORK_DIR}/acm}"
+set_environment_variable_skip_if_existing "ABMRA_ASM_REV_LABEL=${ABMRA_ASM_REV_LABEL:-asm-${ABMRA_ASM_VERSION_MAJOR}${ABMRA_ASM_VERSION_MINOR}${ABMRA_ASM_VERSION_POINT}-${ABMRA_ASM_VERSION_REV}}"
 
-if [[ ${ADMIN_WORKSTATION_PREPARED} == "true" ]]; then
-    set_environment_variable_skip_if_existing "PLATFORM_PROJECT_NUMBER=${PLATFORM_PROJECT_NUMBER:-$(gcloud projects describe ${PLATFORM_PROJECT_ID} --format='value(projectNumber)')}"
-    set_environment_variable_skip_if_existing "ASM_MESH_ID=${ASM_MESH_ID:-proj-${PLATFORM_PROJECT_NUMBER}}"
+# Variable with dependencies above
+set_environment_variable_skip_if_existing "ABMRA_BASE_CONF_DIR=${ABMRA_BASE_CONF_DIR:-${ABMRA_BASE_DIR}/conf}"
+set_environment_variable_skip_if_existing "ABMRA_BASE_KUSTOMIZE_DIR=${ABMRA_BASE_KUSTOMIZE_DIR:-${ABMRA_BASE_DIR}/kustomize}"
+
+if [[ ${ABMRA_ADMIN_WORKSTATION_PREPARED} == "true" ]]; then
+    set_environment_variable_skip_if_existing "ABMRA_PLATFORM_PROJECT_NUMBER=${ABMRA_PLATFORM_PROJECT_NUMBER:-$(gcloud projects describe ${ABMRA_PLATFORM_PROJECT_ID} --format='value(projectNumber)')}"
+    set_environment_variable_skip_if_existing "ABMRA_ASM_MESH_ID=${ABMRA_ASM_MESH_ID:-proj-${ABMRA_PLATFORM_PROJECT_NUMBER}}"
 fi
 
-DEPLOYMENT_USER_HOME=`eval echo "~${DEPLOYMENT_USER}"`
+DEPLOYMENT_USER_HOME=`eval echo "~${ABMRA_DEPLOYMENT_USER}"`
 if [[ ! ${DEPLOYMENT_USER_HOME} = ~* ]] || [ ! -z ${DEPLOYMENT_USER_SSH_KEY} ]; then
     set_environment_variable_skip_if_existing "DEPLOYMENT_USER_SSH_KEY=${DEPLOYMENT_USER_SSH_KEY:-${DEPLOYMENT_USER_HOME}/.ssh/id_rsa}"
 fi
 
-sort -o ${ENVIRONMENT_FILE}{,}
+sort -o ${ABMRA_ENVIRONMENT_FILE}{,}
 
 # Check for duplicates
-duplicates=$(awk -F' |=' '{print $2}' ${ENVIRONMENT_FILE} | uniq -c | egrep -v '^[[:blank:]]*1' | awk '{print $2}')
+duplicates=$(awk -F' |=' '{print $2}' ${ABMRA_ENVIRONMENT_FILE} | uniq -c | egrep -v '^[[:blank:]]*1' | awk '{print $2}')
 if [[ "${duplicates}" != "" ]]; then
-    echo "[ERROR] Duplicate entries found in ${ENVIRONMENT_FILE}"
+    echo "[ERROR] Duplicate entries found in ${ABMRA_ENVIRONMENT_FILE}"
     echo "----------------------------------------------------------------"
     for dup in ${duplicates}; do
-        grep ${dup} ${ENVIRONMENT_FILE}
+        grep ${dup} ${ABMRA_ENVIRONMENT_FILE}
     done
     echo "----------------------------------------------------------------"
     echo "Fixed any duplicates and retry the script, exiting!"
@@ -95,9 +103,9 @@ if [[ "${duplicates}" != "" ]]; then
     exit -1
 fi
 
-source ${ENVIRONMENT_FILE}
+source ${ABMRA_ENVIRONMENT_FILE}
 
-# Add environment file to .profile file
-grep -q "${ENVIRONMENT_FILE}" ~/.profile || echo -e "source ${ENVIRONMENT_FILE}" >> ~/.profile
+# Add environment file to .bashrc file
+grep -q "${ABMRA_ENVIRONMENT_FILE}" ~/.bashrc || echo -e "source ${ABMRA_ENVIRONMENT_FILE}" >> ~/.bashrc
 
 local_error=0

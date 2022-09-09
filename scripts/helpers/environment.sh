@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-export ENV_FILE=${ENVIRONMENT_FILE}
+export ENV_FILE=${ABMRA_ENVIRONMENT_FILE}
 
 function generate_envsubst_files_from_directory {
     template_directory=${1}

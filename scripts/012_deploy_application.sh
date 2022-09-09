@@ -14,17 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
+export KUBECONFIG=$(ls -1 ${ABMRA_BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do
     load_cluster_config ${cluster_name}
     
-    title_no_wait "Deploying application on ${cluster_name}"
-    print_and_execute "kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} apply -f ${ABM_WORK_DIR}/bank-of-anthos/extras/jwt/jwt-secret.yaml"
-    print_and_execute "kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} apply -f ${ABM_WORK_DIR}/bank-of-anthos/kubernetes-manifests"
+    echo_title "Deploying application on ${cluster_name}"
+    print_and_execute "kubectl --context=${cluster_name} --namespace=${ABMRA_APP_NAMESPACE} apply -f ${ABMRA_WORK_DIR}/bank-of-anthos/extras/jwt/jwt-secret.yaml"
+    print_and_execute "kubectl --context=${cluster_name} --namespace=${ABMRA_APP_NAMESPACE} apply -f ${ABMRA_WORK_DIR}/bank-of-anthos/kubernetes-manifests"
 
-    bold_no_wait "Update application for ingress"
+    echo_bold "Update application for ingress"
     yaml_file=/tmp/frontend-ingress.yaml
     cat <<EOF > ${yaml_file}
 apiVersion: v1
@@ -56,13 +56,13 @@ spec:
                 port:
                   number: 80
 EOF
-    kubectl --context=${cluster_name} --namespace ${APP_NAMESPACE} apply -f ${yaml_file} && rm -f ${yaml_file}
+    kubectl --context=${cluster_name} --namespace ${ABMRA_APP_NAMESPACE} apply -f ${yaml_file} && rm -f ${yaml_file}
     echo
 done
 
 for cluster_name in $(get_cluster_names); do 
-    title_no_wait "Wait for deployments to be available on ${cluster_name}"
-    print_and_execute "kubectl --context=${cluster_name} --namespace=${APP_NAMESPACE} wait --for=condition=available --timeout=600s deployments --all"
+    echo_title "Wait for deployments to be available on ${cluster_name}"
+    print_and_execute "kubectl --context=${cluster_name} --namespace=${ABMRA_APP_NAMESPACE} wait --for=condition=available --timeout=600s deployments --all"
     echo
 done
 

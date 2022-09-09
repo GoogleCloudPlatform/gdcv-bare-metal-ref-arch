@@ -14,12 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Clone the application repository"
-print_and_execute "cd ${ABM_WORK_DIR}"
+echo_title "Clone the application repository"
+print_and_execute "cd ${ABMRA_WORK_DIR}"
 print_and_execute "git clone https://github.com/GoogleCloudPlatform/bank-of-anthos.git"
-sed 's/value: "true"/value: "false"/' -i ${ABM_WORK_DIR}/bank-of-anthos/kubernetes-manifests/*.yaml
+sed 's/value: "true"/value: "false"/' -i ${ABMRA_WORK_DIR}/bank-of-anthos/kubernetes-manifests/*.yaml
 
 check_local_error
 total_runtime

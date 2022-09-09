@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-add_or_replace_env_var_in_file () {
+function add_or_replace_env_var_in_file {
     file=${1}
     key=${2}
     value=${3}
@@ -22,9 +22,8 @@ add_or_replace_env_var_in_file () {
         echo "export ${key}=${value} >> ${file}"
     fi
 }
-export -f add_or_replace_env_var_in_file
 
-remove_env_var_in_file () {
+function remove_env_var_in_file {
     file=${1}
     key=${2}
 
@@ -34,4 +33,3 @@ remove_env_var_in_file () {
         echo "WARNING: '${key}' not found in ${file}"
     fi
 }
-export -f remove_env_var_in_file

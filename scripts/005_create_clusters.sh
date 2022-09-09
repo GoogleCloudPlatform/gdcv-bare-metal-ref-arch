@@ -14,19 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
+source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
-title_no_wait "Create clusters"
-print_and_execute "cd ${ABM_WORK_DIR}"
+echo_title "Create clusters"
+print_and_execute "cd ${ABMRA_WORK_DIR}"
 for cluster_name in $(get_cluster_names); do
-    title_no_wait "Creating ${cluster_name}"
+    echo_title "Creating ${cluster_name}"
     
-    print_and_execute "bmctl --workspace-dir ${BMCTL_WORKSPACE_DIR} create cluster -c ${cluster_name}"
+    print_and_execute "bmctl --workspace-dir ${ABMRA_BMCTL_WORKSPACE_DIR} create cluster -c ${cluster_name}"
 done
 
-title_no_wait "Setup kubectl ctx"
+echo_title "Setup kubectl ctx"
 for cluster_name in $(get_cluster_names); do
-    export KUBECONFIG=${BMCTL_WORKSPACE_DIR}/${cluster_name}/${cluster_name}-kubeconfig
+    export KUBECONFIG=${ABMRA_BMCTL_WORKSPACE_DIR}/${cluster_name}/${cluster_name}-kubeconfig
     print_and_execute "kubectl ctx ${cluster_name}=."
 done
 
