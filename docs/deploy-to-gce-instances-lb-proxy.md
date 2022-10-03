@@ -249,7 +249,7 @@ To create the Shared VPC in the ABMRA_NETWORK_PROJECT_ID project, the `Compute S
 
 ## Deploy the example application
 
-See the [Deploy the application](deploy-the-application.md) guide.
+See the [Deploy the application](deploy-the-application-boa.md) guide.
 
 ## Tear down
 
