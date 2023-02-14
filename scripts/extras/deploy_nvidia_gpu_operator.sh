@@ -14,19 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-<<<<<<< Updated upstream
-LOG_FILE_PREFIX=extras
-source ${ABM_WORK_DIR}/scripts/helpers/include.sh
-
-HELM_VERSION=3.7.0
-BIN_DIR=${ABM_WORK_DIR}/bin
-=======
 ABMRA_LOG_FILE_PREFIX=extras-
 source ${ABMRA_WORK_DIR}/scripts/helpers/include.sh
 
 HELM_VERSION=3.9.4
 BIN_DIR=${ABMRA_WORK_DIR}/bin
->>>>>>> Stashed changes
 
 export HELM_INSTALL_DIR=${BIN_DIR}
 export BINARY_NAME=helm-${HELM_VERSION}
@@ -34,7 +26,7 @@ export PATH=${HELM_INSTALL_DIR}:${PATH}
 
 HELM_BINARY=${HELM_INSTALL_DIR}/${BINARY_NAME}
 
-curl -fsSL -o ${BIN_DIR}/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 
+curl -fsSL -o ${BIN_DIR}/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 chmod 700 ${BIN_DIR}/get_helm.sh
 ${BIN_DIR}/get_helm.sh --no-sudo --version v${HELM_VERSION}
 
@@ -45,12 +37,6 @@ export KUBECONFIG=$(ls -1 ${BMCTL_WORKSPACE_DIR}/*/*-kubeconfig | tr '\n' ':')
 for cluster_name in $(get_cluster_names); do
     load_cluster_config ${cluster_name}
 
-<<<<<<< Updated upstream
-    title_no_wait "Deploy NVIDIA GPU operator on ${cluster_name}"
-    bold_no_wait "kubectl --context ${cluster_name} create namespace ${NVIDIA_GPU_OPERATOR_NAMESPACE}"
-    bold_no_wait "${HELM_BINARY} install --kube-context ${cluster_name} --wait nvidia-gpu-operator nvidia/gpu-operator --set operator.defaultRuntime='containerd'"
-=======
     echo_title "Deploy NVIDIA GPU operator on ${cluster_name}"
     print_and_execute "${HELM_BINARY} install --create-namespace --kube-context ${cluster_name} --namespace ${NVIDIA_GPU_OPERATOR_NAMESPACE} --wait nvidia-gpu-operator nvidia/gpu-operator --set operator.defaultRuntime='containerd'"
->>>>>>> Stashed changes
 done
