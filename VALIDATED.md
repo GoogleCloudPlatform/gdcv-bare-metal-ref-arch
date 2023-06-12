@@ -1,5 +1,5 @@
 This repository has been validated against the following versions:
-- Anthos on bare metal/`bmctl` 1.12.2
-- Anthos Config Management 1.12.1
-- Anthos Service Mesh 1.14.3-asm.1
-- Google Cloud SDK 402.0.0
+- GDCV for Bare Metal 1.16.5
+- Policy Controller and Config Sync 1.17.2
+- Anthos Service Mesh 1.20.3-asm.4
+- Google Cloud SDK 465.0.0

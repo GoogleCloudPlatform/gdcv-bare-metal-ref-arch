@@ -1,0 +1,1 @@
+../../shared_config/net_hub_prod_variables.tf
